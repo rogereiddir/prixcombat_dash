@@ -1,11 +1,6 @@
 import React, { Component } from 'react'
-import {
-    Layout, Menu,
-  } from 'antd';
-  
-  const {
-    Header
-  } = Layout;
+import {Layout, Menu} from 'antd';
+const { Header } = Layout;
 
 export default class navbar extends Component {
   render() {

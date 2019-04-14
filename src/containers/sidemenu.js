@@ -1,9 +1,6 @@
 import React, { Component } from 'react'
-import {
-    Layout, Menu, Icon,
-  } from 'antd';
+import {Layout, Menu, Icon} from 'antd';
 const { Sider } = Layout;
-  
 const SubMenu = Menu.SubMenu;
 export default class sidemenu extends Component {
     state = {
