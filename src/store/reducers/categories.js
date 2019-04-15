@@ -1,6 +1,6 @@
 import { LOAD_CATEGORIES  } from "../actionTypes";
 
-const categorie = (state = [], action) => {
+export const categories = (state = [], action) => {
   switch (action.type) {
     case LOAD_CATEGORIES:
       return [...action.categories];
@@ -9,5 +9,3 @@ const categorie = (state = [], action) => {
   }
 };
 
-
-export default categorie;

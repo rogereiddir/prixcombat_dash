@@ -1,26 +1,26 @@
 import React, { Component } from 'react'
-import { Table ,Form, Divider , Button} from 'antd';
-import AddProduct from '../modals/addProduct';
+import { Table ,Form, Divider , Button , Icon} from 'antd';
+import AddCategory from '../modals/addCategory';
 import { connect } from "react-redux";
-import { fetchProducts } from "../store/actions/products";
+import { fetchCategories } from "../store/actions/categories";
 
 const FormItem = Form.Item;
 
 
 const columns = [
     { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Category', dataIndex: 'category', key: 'age' },
-    { title: 'SubCategory', dataIndex: 'subcategory', key: 'subcategory' },
-    { title: 'Price', dataIndex: 'price', key: 'price' },
-    { title: 'Discount Price', dataIndex: 'discount_price', key: 'discount_price' },
-    { title: 'InStock', dataIndex: 'inStock', key: 'inStock' },
-    { title: 'Views', dataIndex: 'views', key: 'views' },
-    { title: 'Brand', dataIndex: 'brand', key: 'brand' },
-    { title: 'Url', dataIndex: 'productUrl', key: 'productUrl' },
+    { title: 'Slug', dataIndex: 'slug', key: 'slug' },
+    { title: 'Description', dataIndex: 'description', key: 'description' },
+    {
+      title: 'IsActive', dataIndex: 'isActive', key: 'isActive', render: (record) => (
+      record === true ?  
+      <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
+      <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
+    },
     { title: 'Created', dataIndex: 'createdAt', key: 'createdAt' },
     { title: 'Updated', dataIndex: 'updatedAt', key: 'updatedAt' },
     {
-      title: 'Action', dataIndex: '', key: 'x', render: () => ( <span>
+      title: 'Action', dataIndex: '', key: 'x', render: ({record}) => ( <span>
         <a href="/">Edit</a>
         <Divider type="vertical" />
         <a href="/">Delete</a>
@@ -28,7 +28,7 @@ const columns = [
     },
   ];
   
- class productslist extends Component {
+ class categorylist extends Component {
     state = {
         pagination: {},
         selectedRowKeys: [],
@@ -51,7 +51,7 @@ const columns = [
           filter: {},
         }
         console.log(params)
-        this.props.fetchProducts(params);
+        this.props.fetchCategories(params);
       }
       handleTableChange = (pagination, filters, sorter) => {
         const pager = { ...this.state.pagination };
@@ -65,7 +65,7 @@ const columns = [
           filter: {...filters},
         }
         console.log(params)
-        this.props.fetchProducts(params);
+        this.props.fetchCategories(params);
       }
     
   render() {
@@ -90,35 +90,40 @@ const columns = [
         wrapperCol: { span: 14 },
       };
     return (
-      <>
+      <div>
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
                 <Button onClick={this.toggleshowModal} type="primary" icon="plus">
-                  Add Product
+                Add Category
+                </Button>
+            </FormItem>
+            <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
+                <Button onClick={this.toggleshowModal} type="primary" icon="eye">
+                Show Category
                 </Button>
             </FormItem>
         </Form>
        
-        <AddProduct toggleshowModal={this.toggleshowModal} visible={this.state.visible} />
+        <AddCategory toggleshowModal={this.toggleshowModal} visible={this.state.visible} />
         <Table
         size="small"
         rowKey={record => record.id}
         columns={columns}
-        dataSource={this.props.products}
+        dataSource={this.props.categories}
         pagination={this.state.pagination}
         rowSelection={rowSelection}
         loading={this.state.loading}
         onChange={this.handleTableChange}
        />
-      </>
+      </div>
     )
   }
 }
 
 function mapStateToProps(state) {
   return {
-    products: state.products,
+    categories: state.categories,
   };
 }
 
-export default connect(mapStateToProps, { fetchProducts })(productslist)
+export default connect(mapStateToProps, { fetchCategories })(categorylist)

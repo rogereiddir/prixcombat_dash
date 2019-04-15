@@ -9,9 +9,10 @@ export function setTokenHeader(token) {
   }
 }
 
-export function dataProvider(apiUrl , type , path , params, data = {}) {
+export function dataProvider(apiUrl , type , path , params) {
   let url ='';
   let method ='';
+  let data='';
   switch(type){
     case "GET_LIST": {
         const { page, perPage } = params.pagination;
