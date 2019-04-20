@@ -1,5 +1,5 @@
 import { IS_LOADING } from "../actionTypes";
 
-export var toggleIsLoading = () => ({
+export const toggleIsLoading = () => ({
     type:IS_LOADING 
 })

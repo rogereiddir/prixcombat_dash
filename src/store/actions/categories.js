@@ -1,5 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
-import { LOAD_CATEGORIES , CREATE_CATEGORY } from "../actionTypes";
+import { LOAD_CATEGORIES } from "../actionTypes";
+
 let apiUrl = 'http://localhost:5000';
 
 
@@ -8,32 +9,31 @@ export const loadCategories = categories => ({
     categories
 });
 
-export const createCategory = category => ({
-  type: CREATE_CATEGORY,
-  category
-});
-
-export const AddCategory = (params) => {
+export const CreateCategory = (params) => {
   return dispatch => {
     return dataProvider(apiUrl, "CREATE", "admin/categories", params)
-      .then(res => {
-        dispatch(createCategory(res));
-      })
-      .catch(err => {
-        console.log(err)
-      });
+  };
+};
+
+export const DeleteCategory = (params) => {
+  return dispatch => {
+    return dataProvider(apiUrl, "DELETE_MANY", "admin/categories", params)
+  };
+};
+
+export const fetchCategories = (params = {
+  pagination: { page: 1, perPage: 10 },
+  sort: { field: 'name' , order: 'ASC' },
+  filter: {},
+}) => {
+  return dispatch => {
+    return dataProvider(apiUrl, "GET_LIST", "admin/categories", params)
   };
 };
 
 
-export const fetchCategories = (params) => {
+export const fetchOneCategories = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_LIST", "admin/categories", params)
-      .then(res => {
-        dispatch(loadCategories(res));
-      })
-      .catch(err => {
-        console.log(err)
-      });
+    return dataProvider(apiUrl, "GET_ONE", "admin/categories", params)
   };
 };

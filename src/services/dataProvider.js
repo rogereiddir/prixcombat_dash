@@ -27,7 +27,6 @@ export function dataProvider(apiUrl , type , path , params) {
         };
         url = `${apiUrl}/${path}?${stringify(query)}`;
         method = 'GET';
-        console.log(url)
         break;
     }
     case "GET_ONE":
@@ -37,7 +36,7 @@ export function dataProvider(apiUrl , type , path , params) {
     case "CREATE":
         url = `${apiUrl}/${path}`;
         method = 'POST';
-        data = JSON.stringify(params.data);
+        data = params.data;
         break;
     case "UPDATE":
         url = `${apiUrl}/${path}/${params.id}`;
@@ -81,6 +80,7 @@ export function dataProvider(apiUrl , type , path , params) {
   return new Promise((resolve, reject) => {
     return axios[method.toLowerCase()](url, data)
       .then(res => {
+        // console.log({data:res.data,total:res.headers['content-range'].split('/').pop()})
         return resolve(res.data);
       })
       .catch(err => {

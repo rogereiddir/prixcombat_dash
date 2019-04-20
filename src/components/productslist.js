@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Table ,Form, Divider , Button} from 'antd';
-import AddProduct from '../modals/addProduct';
+import AddProduct from '../modals/products/addProduct';
 import { connect } from "react-redux";
 import { fetchProducts } from "../store/actions/products";
 

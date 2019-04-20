@@ -1,6 +1,6 @@
 import { IS_LOADING } from "../actionTypes";
 
- const isloading = (state = false , action) => {
+export const loading = (state = true , action) => {
     switch(action.type){
         case IS_LOADING :
          return !state ;
@@ -8,5 +8,3 @@ import { IS_LOADING } from "../actionTypes";
          return state; 
     }
   }
-
-  export default isloading;

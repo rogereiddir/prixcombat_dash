@@ -1,11 +1,13 @@
 import React, { Component } from 'react'
-import { Modal,Form, Switch, Button, Upload, Icon,Input} from 'antd';
-
+import { Modal,Form, Switch, Button, Upload, Icon,Input , message} from 'antd';
+import { CreateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
+import { connect } from "react-redux";
 const { TextArea } = Input;
 
 class addCategory extends Component {
     state = {
-        confirmLoading:false
+        confirmLoading:false,
+        fileList: []
     }
     handleOk = () => {
         this.setState({
@@ -14,44 +16,59 @@ class addCategory extends Component {
         setTimeout(() => {
           this.props.form.validateFields((err, values) => {
             if (!err) {
-              console.log('Received values of form: ', values);
+              const { dispatch } = this.props;
+              console.log('Received values of form: ', typeof values);
+            
               this.setState({
                 confirmLoading: false,
               });
-              this.props.toggleshowModal()
+              console.log('Received values of form: ', values);
+              
+              dispatch(CreateCategory({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+              .then(async()=> {
+                message.success('Created successfully.')
+                this.setState({
+                  confirmLoading: false,
+                });
+                let res = await dispatch(fetchCategories())
+                dispatch(loadCategories(res));
+                this.props.toggleAddModal()
+              })
+              .catch((err)=> message.error('err') )
+            }else{
+              this.setState({
+                confirmLoading: false,
+              });
+              message.error('something is wrong');
             }
-            console.log(err)
-            this.setState({
-              confirmLoading: false,
-            });
           });
         }, 2000);
-      }
-    
+    }
     handleCancel = () => {
       console.log('Clicked cancel button');
-      this.props.toggleshowModal()
-    }
-    normFile = (e) => {
-      console.log('Upload event:', e);
-      if (Array.isArray(e)) {
-        return e;
-      }
-      return e && e.fileList;
+      this.props.toggleAddModal()
     }
   render() {
-    let {visible} = this.props;
+    let {addvisible} = this.props;
     const { getFieldDecorator } = this.props.form;
     const { confirmLoading } = this.state
+
+    const props = {
+      beforeUpload: () => {
+        return false;
+      },
+      multiple: false,
+      className: 'upload-list-inline',
+    };
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
-      };
+    };
     return (
     <Modal
       width={800}
       title="Add Category"
-      visible={visible}
+      visible={addvisible}
       onOk={this.handleOk}
       confirmLoading={confirmLoading}
       onCancel={this.handleCancel}
@@ -62,6 +79,7 @@ class addCategory extends Component {
                 rules: [{
                 required: true,
                 message: 'Please enter your Category Name',
+                whitespace:true
                 }],
             })(
                 <Input placeholder="Please enter your Category Name" />
@@ -73,6 +91,7 @@ class addCategory extends Component {
                 rules: [{
                 required: true,
                 message: 'Please enter your Category Name',
+                whitespace:true
                 }],
             })(
                 <Input placeholder="Please enter your Category Name" />
@@ -83,15 +102,14 @@ class addCategory extends Component {
           label="Upload"
           extra="Category picture"
         >
-          {getFieldDecorator('upload', {
+          {getFieldDecorator('picture', {
             rules: [{
              required: true,
              message: 'Please enter your Category picture',
             }],
-            valuePropName: 'fileList',
-            getValueFromEvent: this.normFile,
+            valuePropName: 'setFieldsValue',
           })(
-            <Upload name="logo" action="/upload.do" listType="picture">
+            <Upload name="picture" listType="picture" {...props}>
               <Button>
                 <Icon type="upload" /> Click to upload
               </Button>
@@ -106,6 +124,7 @@ class addCategory extends Component {
                 rules: [{
                 required: true,
                 message: 'Please enter your Category description',
+                whitespace:true
                 }],
             })(
                 <TextArea placeholder="Please enter your Category description" rows={4} /> 
@@ -113,9 +132,9 @@ class addCategory extends Component {
         </Form.Item>
 
         <Form.Item
-          label="IsActive"
+          label="isActive"
         >
-          {getFieldDecorator('IsActive', { valuePropName: 'checked' })(
+          {getFieldDecorator('isActive', { valuePropName: 'checked', initialValue:false })(
             <Switch />
           )}
         </Form.Item>
@@ -126,6 +145,6 @@ class addCategory extends Component {
   }
 }
 
-const AddCategory = Form.create({ name: 'validate_other' })(addCategory);
+const AddCategoryModal = Form.create({ name: 'validate_other' })(addCategory);
 
-export default AddCategory
+export default connect()(AddCategoryModal)

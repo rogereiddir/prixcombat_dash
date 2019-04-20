@@ -1,57 +1,58 @@
 import React, { Component } from 'react'
-import { Table ,Form, Divider , Button , Icon} from 'antd';
-import AddCategory from '../modals/addCategory';
+import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
+import AddCategory from '../modals/categories/addCategory';
+import ShowCategory from '../modals/categories/showCategory';
 import { connect } from "react-redux";
-import { fetchCategories } from "../store/actions/categories";
-
+import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategories } from "../store/actions/categories";
+import { toggleIsLoading } from "../store/actions/isLoading";
+import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
-
-const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Slug', dataIndex: 'slug', key: 'slug' },
-    { title: 'Description', dataIndex: 'description', key: 'description' },
-    {
-      title: 'IsActive', dataIndex: 'isActive', key: 'isActive', render: (record) => (
-      record === true ?  
-      <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
-      <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
-    },
-    { title: 'Created', dataIndex: 'createdAt', key: 'createdAt' },
-    { title: 'Updated', dataIndex: 'updatedAt', key: 'updatedAt' },
-    {
-      title: 'Action', dataIndex: '', key: 'x', render: ({record}) => ( <span>
-        <a href="/">Edit</a>
-        <Divider type="vertical" />
-        <a href="/">Delete</a>
-      </span>),
-    },
-  ];
-  
- class categorylist extends Component {
+class categorylist extends Component {
     state = {
         pagination: {},
         selectedRowKeys: [],
-        loading: false,
-        visible:false,
+        loading:true,
+        loadingb:false,
+        addvisible:false,
+        showvisible:false,
+        disabled:true,
+        Category:{}
       };
+      
       onSelectChange = (selectedRowKeys) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
-        this.setState({ selectedRowKeys });
+        this.setState({ selectedRowKeys , disabled:false });
+        if(isEmpty(selectedRowKeys)){
+          this.setState({ disabled:true })
+        }
       }
-      toggleshowModal = () => {
+      toggleAddModal = () => {
         this.setState({
-          visible:!this.state.visible,
+          addvisible:!this.state.addvisible,
+        });
+      }
+
+      toggleShowModal = () => {
+        this.setState({
+          showvisible:!this.state.showvisible,
         });
       }
       componentDidMount() {
-        let params = {
-          pagination: { page: 1, perPage: 10 },
-          sort: { field: 'name' , order: 'ASC' },
-          filter: {},
-        }
-        console.log(params)
-        this.props.fetchCategories(params);
+        this.props.fetchCategories() 
+        .then(res => {
+          this.setState({ loading: false });
+          this.props.loadCategories(res);
+          const pagination = { ...this.state.pagination };
+          console.log(res)
+          pagination.total = Number(res.total);
+          this.setState({
+            pagination,
+          });
+        })
+        .catch(err => {
+          console.log(err)
+        });  
       }
       handleTableChange = (pagination, filters, sorter) => {
         const pager = { ...this.state.pagination };
@@ -60,15 +61,67 @@ const columns = [
           pagination: pager,
         });
         let params = {
-          pagination: { page: pagination.current, perPage: 10 },
-          sort: { field: sorter.field , order: sorter.order === 'ascend' ? 'ASC' : 'DESC' },
+          pagination: { page: pagination.current, perPage: pagination.pageSize },
+          sort: { field: "name" , order: 'ASC' },
           filter: {...filters},
         }
-        console.log(params)
-        this.props.fetchCategories(params);
+        this.setState({ loading: true });
+        this.props.fetchCategories(params) 
+        .then(res => {
+          this.setState({ loading: false });
+          this.props.loadCategories(res);
+        })
+        .catch(err => {
+          console.log(err)
+        });
       }
-    
+       confirm = (e) => {
+        this.setState({ loading: true });
+        this.props.DeleteCategory({ids:e})
+        .then(async ()=>{
+          let res = await this.props.fetchCategories()
+          this.props.loadCategories(res);
+          message.success('Category Deleted');
+          this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
+          
+        }).catch(()=>{
+          message.error('Category not Deleted');
+        });
+      }
+     cancel = (e) => {
+          message.error('Canceled');
+          this.setState({ disabled:true ,selectedRowKeys:[]});
+     }
+
+     ShowCategory = async (id) => {
+         let res = await this.props.fetchOneCategories({id})
+         this.setState({Category:res})
+         console.log(this.state.Category)
+         this.toggleShowModal()
+     }
+      
   render() {
+    const columns = [
+      { title: 'Name', dataIndex: 'name', key: 'name' },
+      { title: 'Slug', dataIndex: 'slug', key: 'slug' },
+      { title: 'Description', dataIndex: 'description', key: 'description' },
+      {
+        title: 'IsActive', dataIndex: 'isActive', key: 'isActive', render: (record) => (
+        record === true ?  
+        <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
+        <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
+      },
+      { title: 'Created At', dataIndex: 'createdAt', key: 'createdAt' },
+      { title: 'Updated At', dataIndex: 'updatedAt', key: 'updatedAt' },
+      {
+        title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
+          <Button><Icon type="edit" />Edit</Button>
+            <Divider type="vertical" />
+          <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
+        </span>),
+        width:200
+      },
+    ];
     const { selectedRowKeys } = this.state;
     const rowSelection = {
         selectedRowKeys,
@@ -93,27 +146,32 @@ const columns = [
       <div>
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
-                <Button onClick={this.toggleshowModal} type="primary" icon="plus">
+                <Button onClick={this.toggleAddModal} type="primary" icon="plus">
                 Add Category
                 </Button>
             </FormItem>
-            <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
-                <Button onClick={this.toggleshowModal} type="primary" icon="eye">
-                Show Category
-                </Button>
+            <FormItem>
+            <Popconfirm title="Are you sure?" onConfirm={ (e) => this.confirm(this.state.selectedRowKeys)} onCancel={this.cancel} okText="Yes" cancelText="No">
+            <Badge count={this.state.selectedRowKeys.length}>
+              <Button disabled={this.state.disabled} type="danger" loading={this.state.loadingb}>
+                Delete                      
+              </Button>
+            </Badge>
+            </Popconfirm>
             </FormItem>
         </Form>
        
-        <AddCategory toggleshowModal={this.toggleshowModal} visible={this.state.visible} />
+        <AddCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
+        <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
         <Table
-        size="small"
-        rowKey={record => record.id}
-        columns={columns}
-        dataSource={this.props.categories}
-        pagination={this.state.pagination}
-        rowSelection={rowSelection}
-        loading={this.state.loading}
-        onChange={this.handleTableChange}
+          size="small"
+          rowKey={record => record.id}
+          columns={columns}
+          dataSource={this.props.categories}
+          pagination={this.state.pagination}
+          rowSelection={rowSelection}
+          loading={this.state.loading}
+          onChange={this.handleTableChange}
        />
       </div>
     )
@@ -126,4 +184,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchCategories })(categorylist)
+export default connect(mapStateToProps, { fetchCategories , loadCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategories })(categorylist)
