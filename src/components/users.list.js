@@ -8,7 +8,7 @@ import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
-class categorylist extends Component {
+class usersList extends Component {
     state = {
         pagination: {},
         selectedRowKeys: [],
@@ -180,8 +180,8 @@ class categorylist extends Component {
 
 function mapStateToProps(state) {
   return {
-    categories: state.categories,
+    users: state.users,
   };
 }
 
-export default connect(mapStateToProps, { fetchCategories , loadCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategories })(categorylist)
+export default connect(mapStateToProps)(usersList)

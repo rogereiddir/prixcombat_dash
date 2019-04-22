@@ -3,12 +3,10 @@ import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } fr
 import AddCategory from '../modals/categories/addCategory';
 import ShowCategory from '../modals/categories/showCategory';
 import { connect } from "react-redux";
-import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategories } from "../store/actions/categories";
-import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
-class categorylist extends Component {
+class brandslist extends Component {
     state = {
         pagination: {},
         selectedRowKeys: [],
@@ -180,8 +178,8 @@ class categorylist extends Component {
 
 function mapStateToProps(state) {
   return {
-    categories: state.categories,
+    brands: state.brands,
   };
 }
 
-export default connect(mapStateToProps, { fetchCategories , loadCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategories })(categorylist)
+export default connect(mapStateToProps)(brandslist)
