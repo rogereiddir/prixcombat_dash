@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal , Card} from 'antd';
 
- const showCategory = (props) => {
+ const showBrand = (props) => {
     const handleOk = () => {
         props.toggleShowModal()
     }
@@ -9,40 +9,27 @@ import { Modal , Card} from 'antd';
       console.log('Clicked cancel button');
       props.toggleShowModal()
     }
-    let {showvisible , Category} = props;
+    let {showvisible , Brand} = props;
     return (
     <Modal
       width={800}
-      title="Add Category"
+      title="Show Brand"
       visible={showvisible}
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Card title={Category.name}>
-      <Card
-        type="inner"
-        title="Slug"
-        >
-        {Category.slug}
-        </Card>
+      <Card title={Brand.name}>
         <Card
         type="inner"
         title="Picture"
         style={{ marginTop: 16 , width: 240 }}
-        cover={<img alt="example" src={Category.picture} />}
+        cover={<img alt="example" src={Brand.picture} />}
         >
        
-        </Card>
-        <Card
-        style={{ marginTop: 16 }}
-        type="inner"
-        title="Description"
-        >
-        {Category.description}
         </Card>
      </Card>,
     </Modal>
     )
 }
 
-export default showCategory
+export default showBrand

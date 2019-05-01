@@ -1,13 +1,11 @@
 import React, { Component } from 'react'
-import { Modal,Form, Switch, Button, Upload, Icon,Input , message} from 'antd';
-import { CreateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
+import { Modal,Form, Switch,Input,Select , message} from 'antd';
+import { CreateUser , fetchUsers ,loadUsers} from "../../store/actions/users";
 import { connect } from "react-redux";
-const { TextArea } = Input;
-
-class addCategory extends Component {
+const { Option } = Select;
+class addUser extends Component {
     state = {
         confirmLoading:false,
-        fileList: []
     }
     handleOk = () => {
         this.setState({
@@ -18,23 +16,10 @@ class addCategory extends Component {
             if (!err) {
               const { dispatch } = this.props;
               console.log('Received values of form: ', values);
-              // const formdata = new FormData()
-
-              // for ( var key in values ) {
-              //   formdata.append(key, values[key]);
-              // }
-
-              // formdata.delete('picture')
-              // formdata.append('picture',values.picture.file);
-
-              // for (var pair of formdata.entries()) {
-              //   console.log(pair[0]+ ', ' +pair[1]); 
-              // }
-
-              dispatch(CreateCategory({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+              dispatch(CreateUser({data:values}))
               .then(async()=> {
-                let res = await dispatch(fetchCategories())
-                dispatch(loadCategories(res));
+                let res = await dispatch(fetchUsers())
+                dispatch(loadUsers(res));
                 this.props.toggleAddModal()
                 message.success('Created successfully.')
                 this.setState({
@@ -64,14 +49,6 @@ class addCategory extends Component {
     let {addvisible} = this.props;
     const { getFieldDecorator } = this.props.form;
     const { confirmLoading } = this.state
-
-    const props = {
-      beforeUpload: () => {
-        return false;
-      },
-      multiple: false,
-      className: 'upload-list-inline',
-    };
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
@@ -90,64 +67,76 @@ class addCategory extends Component {
             {getFieldDecorator('name', {
                 rules: [{
                 required: true,
-                message: 'Please enter your Category Name',
+                message: "Please enter your User's Name",
                 whitespace:true
                 }],
             })(
-                <Input placeholder="Please enter your Category Name" />
+                <Input placeholder="Please enter your User's Name" />
             )}
         </Form.Item>
 
-        <Form.Item {...formItemLayout} label="Slug">
-            {getFieldDecorator('slug', {
+        <Form.Item {...formItemLayout} label="User Name">
+            {getFieldDecorator('username', {
                 rules: [{
                 required: true,
-                message: 'Please enter your Category Name',
+                message: 'Please enter your User Name',
                 whitespace:true
                 }],
             })(
-                <Input placeholder="Please enter your Category Name" />
+                <Input placeholder="Please enter your User Name" />
             )}
-        </Form.Item>
-
-        <Form.Item
-          label="Upload"
-          extra="Category picture"
-        >
-          {getFieldDecorator('picture', {
-            rules: [{
-             required: true,
-             message: 'Please enter your Category picture',
-            }],
-            valuePropName: 'setFieldsValue',
-          })(
-            <Upload name="picture" listType="picture" {...props}>
-              <Button>
-                <Icon type="upload" /> Click to upload
-              </Button>
-            </Upload>
-          )}
         </Form.Item>
         
         <Form.Item
-          label="Description"
+          label="Email"
         >
-        {getFieldDecorator('description', {
+        {getFieldDecorator('email', {
                 rules: [{
                 required: true,
-                message: 'Please enter your Category description',
+                message: 'Please enter your User email',
                 whitespace:true
                 }],
             })(
-                <TextArea placeholder="Please enter your Category description" rows={4} /> 
+              <Input placeholder="Please enter your User email" />
             )}
         </Form.Item>
 
         <Form.Item
-          label="isActive"
+          label="Password"
         >
-          {getFieldDecorator('isActive', { valuePropName: 'checked', initialValue:false })(
+        {getFieldDecorator('password', {
+                rules: [{
+                required: true,
+                message: 'Please enter your User password',
+                whitespace:true
+                }],
+            })(
+              <Input placeholder="Please enter your User password" />
+            )}
+        </Form.Item>
+
+        <Form.Item
+          label="isAdmin"
+        >
+          {getFieldDecorator('isAdmin', { valuePropName: 'checked', initialValue:false })(
             <Switch />
+          )}
+        </Form.Item>
+
+        <Form.Item
+          label="Role"
+          hasFeedback
+        >
+          {getFieldDecorator('role', {
+            rules: [
+              { required: true, message: 'Please select your Role!' },
+            ],
+          })(
+            <Select placeholder="Please select a Role">
+              <Option value="shop">shop</Option>
+              <Option value="admin">admin</Option>
+              <Option value="member">member</Option>
+            </Select>
           )}
         </Form.Item>
 
@@ -157,6 +146,6 @@ class addCategory extends Component {
   }
 }
 
-const AddCategoryModal = Form.create({ name: 'validate_other' })(addCategory);
+const AddUserModal = Form.create({ name: 'validate_other' })(addUser);
 
-export default connect()(AddCategoryModal)
+export default connect()(AddUserModal)

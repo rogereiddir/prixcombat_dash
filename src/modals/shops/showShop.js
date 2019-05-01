@@ -1,7 +1,7 @@
 import React from 'react'
 import { Modal , Card} from 'antd';
 
- const showCategory = (props) => {
+ const showShop = (props) => {
     const handleOk = () => {
         props.toggleShowModal()
     }
@@ -9,27 +9,34 @@ import { Modal , Card} from 'antd';
       console.log('Clicked cancel button');
       props.toggleShowModal()
     }
-    let {showvisible , Category} = props;
+    let {showvisible , Shop} = props;
     return (
     <Modal
       width={800}
-      title="Add Category"
+      title="Shop Details"
       visible={showvisible}
       onOk={handleOk}
       onCancel={handleCancel}
     >
-      <Card title={Category.name}>
+      <Card title={Shop.name}>
       <Card
         type="inner"
-        title="Slug"
+        title="Email"
         >
-        {Category.slug}
+        {Shop.email}
+        </Card>
+        <Card
+        type="inner"
+        title="URL"
+        style={{ marginTop: 16 }}
+        >
+        {Shop.websiteUrl}
         </Card>
         <Card
         type="inner"
         title="Picture"
         style={{ marginTop: 16 , width: 240 }}
-        cover={<img alt="example" src={Category.picture} />}
+        cover={<img alt="example" src={Shop.picture} />}
         >
        
         </Card>
@@ -38,11 +45,11 @@ import { Modal , Card} from 'antd';
         type="inner"
         title="Description"
         >
-        {Category.description}
+        {Shop.description}
         </Card>
      </Card>,
     </Modal>
     )
 }
 
-export default showCategory
+export default showShop

@@ -1,15 +1,16 @@
 import React, { Component } from 'react'
 import { Modal,Form, Switch, Button, Upload, Icon,Input , message} from 'antd';
-import { CreateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
+import { UpdateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
 import { connect } from "react-redux";
 const { TextArea } = Input;
 
-class addCategory extends Component {
+class editCategory extends Component {
     state = {
         confirmLoading:false,
         fileList: []
     }
     handleOk = () => {
+      let {Category} = this.props;
         this.setState({
           confirmLoading: true,
         });
@@ -18,24 +19,14 @@ class addCategory extends Component {
             if (!err) {
               const { dispatch } = this.props;
               console.log('Received values of form: ', values);
-              // const formdata = new FormData()
-
-              // for ( var key in values ) {
-              //   formdata.append(key, values[key]);
-              // }
-
-              // formdata.delete('picture')
-              // formdata.append('picture',values.picture.file);
-
-              // for (var pair of formdata.entries()) {
-              //   console.log(pair[0]+ ', ' +pair[1]); 
-              // }
-
-              dispatch(CreateCategory({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+              const data = values.picture === Category.picture ? 
+               {...values,id:Category.id} :
+               {...values,id:Category.id,picture:values.picture.fileList[0].thumbUrl}
+              dispatch(UpdateCategory({data}))
               .then(async()=> {
                 let res = await dispatch(fetchCategories())
                 dispatch(loadCategories(res));
-                this.props.toggleAddModal()
+                this.props.toggleEditModal()
                 message.success('Created successfully.')
                 this.setState({
                   confirmLoading: false,
@@ -58,10 +49,10 @@ class addCategory extends Component {
     }
     handleCancel = () => {
       console.log('Clicked cancel button');
-      this.props.toggleAddModal()
+      this.props.toggleEditModal()
     }
   render() {
-    let {addvisible} = this.props;
+    let {editvisible , Category} = this.props;
     const { getFieldDecorator } = this.props.form;
     const { confirmLoading } = this.state
 
@@ -69,8 +60,7 @@ class addCategory extends Component {
       beforeUpload: () => {
         return false;
       },
-      multiple: false,
-      className: 'upload-list-inline',
+      multiple: false
     };
     const formItemLayout = {
         labelCol: { span: 6 },
@@ -79,11 +69,17 @@ class addCategory extends Component {
     return (
     <Modal
       width={800}
-      title="Add Category"
-      visible={addvisible}
+      title="Edit Category"
+      visible={editvisible}
       onOk={this.handleOk}
       confirmLoading={confirmLoading}
       onCancel={this.handleCancel}
+      footer={[
+        <Button key="back" onClick={this.handleCancel}>Return</Button>,
+        <Button key="submit" type="primary" loading={confirmLoading} onClick={this.handleOk}>
+          Save
+        </Button>,
+      ]}
     >
     <Form {...formItemLayout}>
         <Form.Item {...formItemLayout} label="Name">
@@ -93,8 +89,9 @@ class addCategory extends Component {
                 message: 'Please enter your Category Name',
                 whitespace:true
                 }],
+                initialValue:Category.name
             })(
-                <Input placeholder="Please enter your Category Name" />
+                <Input  placeholder="Please enter your Category Name" />
             )}
         </Form.Item>
 
@@ -105,6 +102,7 @@ class addCategory extends Component {
                 message: 'Please enter your Category Name',
                 whitespace:true
                 }],
+                initialValue:Category.slug
             })(
                 <Input placeholder="Please enter your Category Name" />
             )}
@@ -115,17 +113,16 @@ class addCategory extends Component {
           extra="Category picture"
         >
           {getFieldDecorator('picture', {
-            rules: [{
-             required: true,
-             message: 'Please enter your Category picture',
-            }],
             valuePropName: 'setFieldsValue',
+            initialValue:Category.picture
           })(
+           
             <Upload name="picture" listType="picture" {...props}>
               <Button>
                 <Icon type="upload" /> Click to upload
               </Button>
             </Upload>
+           
           )}
         </Form.Item>
         
@@ -138,6 +135,7 @@ class addCategory extends Component {
                 message: 'Please enter your Category description',
                 whitespace:true
                 }],
+                initialValue:Category.description
             })(
                 <TextArea placeholder="Please enter your Category description" rows={4} /> 
             )}
@@ -146,7 +144,7 @@ class addCategory extends Component {
         <Form.Item
           label="isActive"
         >
-          {getFieldDecorator('isActive', { valuePropName: 'checked', initialValue:false })(
+          {getFieldDecorator('isActive', { valuePropName: 'checked', initialValue:Category.isActive })(
             <Switch />
           )}
         </Form.Item>
@@ -157,6 +155,6 @@ class addCategory extends Component {
   }
 }
 
-const AddCategoryModal = Form.create({ name: 'validate_other' })(addCategory);
+const EditCategoryModal = Form.create({ name: 'validate_other' })(editCategory);
 
-export default connect()(AddCategoryModal)
+export default connect()(EditCategoryModal)

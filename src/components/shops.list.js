@@ -1,11 +1,11 @@
 import React, { Component } from 'react'
 import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
-import AddCategory from '../modals/categories/addCategory';
-import ShowCategory from '../modals/categories/showCategory';
+import AddShop from '../modals/shops/addShop';
+import ShowShop from '../modals/shops/showShop';
 import { connect } from "react-redux";
-import {isEmpty} from 'underscore'
+import {isEmpty} from 'underscore';
+import { fetchShops  , loadShops , DeleteShop , fetchOneShop } from "../store/actions/shops";
 const FormItem = Form.Item;
-
 class shopslist extends Component {
     state = {
         pagination: {},
@@ -15,7 +15,7 @@ class shopslist extends Component {
         addvisible:false,
         showvisible:false,
         disabled:true,
-        Category:{}
+        Shop:{}
       };
       
       onSelectChange = (selectedRowKeys) => {
@@ -37,10 +37,10 @@ class shopslist extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchCategories() 
+        this.props.fetchShops() 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadCategories(res);
+          this.props.loadShops(res);
           const pagination = { ...this.state.pagination };
           console.log(res)
           pagination.total = Number(res.total);
@@ -64,10 +64,10 @@ class shopslist extends Component {
           filter: {...filters},
         }
         this.setState({ loading: true });
-        this.props.fetchCategories(params) 
+        this.props.fetchShops(params) 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadCategories(res);
+          this.props.loadShops(res);
         })
         .catch(err => {
           console.log(err)
@@ -75,15 +75,15 @@ class shopslist extends Component {
       }
        confirm = (e) => {
         this.setState({ loading: true });
-        this.props.DeleteCategory({ids:e})
+        this.props.DeleteShop({ids:e})
         .then( async ()=>{
-          let res = await this.props.fetchCategories()
-          this.props.loadCategories(res);
-          message.success('Category Deleted');
+          let res = await this.props.fetchShops()
+          this.props.loadShops(res);
+          message.success('Shop Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
           
         }).catch(()=>{
-          message.error('Category not Deleted');
+          message.error('Shop not Deleted');
         });
       }
      cancel = (e) => {
@@ -91,31 +91,25 @@ class shopslist extends Component {
           this.setState({ disabled:true ,selectedRowKeys:[]});
      }
 
-     ShowCategory = async (id) => {
-         let res = await this.props.fetchOneCategories({id})
-         this.setState({Category:res})
-         console.log(this.state.Category)
+     showShop = async (id) => {
+         let res = await this.props.fetchOneShop({id})
+         this.setState({Shop:res})
+         console.log(this.state.Shop)
          this.toggleShowModal()
      }
       
   render() {
     const columns = [
       { title: 'Name', dataIndex: 'name', key: 'name' },
-      { title: 'Slug', dataIndex: 'slug', key: 'slug' },
+      { title: 'Url', dataIndex: 'websiteUrl', key: 'websiteUrl' },
       { title: 'Description', dataIndex: 'description', key: 'description' },
-      {
-        title: 'IsActive', dataIndex: 'isActive', key: 'isActive', render: (record) => (
-        record === true ?  
-        <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
-        <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
-      },
       { title: 'Created At', dataIndex: 'createdAt', key: 'createdAt' },
       { title: 'Updated At', dataIndex: 'updatedAt', key: 'updatedAt' },
       {
         title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
           <Button><Icon type="edit" />Edit</Button>
             <Divider type="vertical" />
-          <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
+          <Button onClick={(e)=>{this.showShop(id)}}><Icon type="eye" />Show</Button>
         </span>),
         width:200
       },
@@ -145,7 +139,7 @@ class shopslist extends Component {
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
                 <Button onClick={this.toggleAddModal} type="primary" icon="plus">
-                Add Category
+                Add Shop
                 </Button>
             </FormItem>
             <FormItem>
@@ -159,13 +153,13 @@ class shopslist extends Component {
             </FormItem>
         </Form>
        
-        <AddCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
-        <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
+        <AddShop toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
+        <ShowShop Shop={this.state.Shop} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
         <Table
           size="small"
           rowKey={record => record.id}
           columns={columns}
-          dataSource={this.props.categories}
+          dataSource={this.props.shops}
           pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
@@ -182,4 +176,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(shopslist)
+export default connect(mapStateToProps,{ fetchShops  , loadShops , DeleteShop , fetchOneShop })(shopslist)

@@ -1,57 +1,61 @@
 import React, { Component } from 'react'
-import { Table ,Form, Divider , Button} from 'antd';
-import AddProduct from '../modals/products/addProduct';
+import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
+import AddProduct from '../modals/categories/addCategory';
+import ShowProduct from '../modals/categories/showCategory';
 import { connect } from "react-redux";
-import { fetchProducts } from "../store/actions/products";
-
+import { fetchProducts  , loadProducts  , DeleteProduct , fetchOneProduct  } from "../store/actions/products";
+import { toggleIsLoading } from "../store/actions/isLoading";
+import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
-
-const columns = [
-    { title: 'Name', dataIndex: 'name', key: 'name' },
-    { title: 'Category', dataIndex: 'category', key: 'age' },
-    { title: 'SubCategory', dataIndex: 'subcategory', key: 'subcategory' },
-    { title: 'Price', dataIndex: 'price', key: 'price' },
-    { title: 'Discount Price', dataIndex: 'discount_price', key: 'discount_price' },
-    { title: 'InStock', dataIndex: 'inStock', key: 'inStock' },
-    { title: 'Views', dataIndex: 'views', key: 'views' },
-    { title: 'Brand', dataIndex: 'brand', key: 'brand' },
-    { title: 'Url', dataIndex: 'productUrl', key: 'productUrl' },
-    { title: 'Created', dataIndex: 'createdAt', key: 'createdAt' },
-    { title: 'Updated', dataIndex: 'updatedAt', key: 'updatedAt' },
-    {
-      title: 'Action', dataIndex: '', key: 'x', render: () => ( <span>
-        <a href="/">Edit</a>
-        <Divider type="vertical" />
-        <a href="/">Delete</a>
-      </span>),
-    },
-  ];
-  
- class productslist extends Component {
+class productslist extends Component {
     state = {
         pagination: {},
         selectedRowKeys: [],
-        loading: false,
-        visible:false,
+        loading:true,
+        loadingb:false,
+        addvisible:false,
+        showvisible:false,
+        disabled:true,
+        Product :{}
       };
+      
       onSelectChange = (selectedRowKeys) => {
         console.log('selectedRowKeys changed: ', selectedRowKeys);
-        this.setState({ selectedRowKeys });
+        this.setState({ selectedRowKeys , disabled:false });
+        if(isEmpty(selectedRowKeys)){
+          this.setState({ disabled:true })
+        }
       }
-      toggleshowModal = () => {
+      toggleAddModal = () => {
         this.setState({
-          visible:!this.state.visible,
+          addvisible:!this.state.addvisible,
         });
       }
+
+      toggleShowModal = () => {
+        this.setState({
+          showvisible:!this.state.showvisible,
+        });
+      }
+      componentWillUnmount(){
+        console.log('ok')
+      }
       componentDidMount() {
-        let params = {
-          pagination: { page: 1, perPage: 10 },
-          sort: { field: 'name' , order: 'ASC' },
-          filter: {},
-        }
-        console.log(params)
-        this.props.fetchProducts(params);
+        this.props.fetchProducts() 
+        .then(res => {
+          this.setState({ loading: false });
+          this.props.loadProducts(res);
+          const pagination = { ...this.state.pagination };
+          console.log(res)
+          pagination.total = Number(res.total);
+          this.setState({
+            pagination,
+          });
+        })
+        .catch(err => {
+          console.log(err)
+        });  
       }
       handleTableChange = (pagination, filters, sorter) => {
         const pager = { ...this.state.pagination };
@@ -60,15 +64,72 @@ const columns = [
           pagination: pager,
         });
         let params = {
-          pagination: { page: pagination.current, perPage: 10 },
-          sort: { field: sorter.field , order: sorter.order === 'ascend' ? 'ASC' : 'DESC' },
+          pagination: { page: pagination.current, perPage: pagination.pageSize },
+          sort: { field: "name" , order: 'ASC' },
           filter: {...filters},
         }
-        console.log(params)
-        this.props.fetchProducts(params);
+        this.setState({ loading: true });
+        this.props.fetchCategories(params) 
+        .then(res => {
+          this.setState({ loading: false });
+          this.props.loadProducts(res);
+        })
+        .catch(err => {
+          console.log(err)
+        });
       }
-    
+       confirm = (e) => {
+        this.setState({ loading: true });
+        this.props.DeleteProduct({ids:e})
+        .then( async ()=>{
+          let res = await this.props.fetchCategories()
+          this.props.loadProducts(res);
+          message.success('Product Deleted');
+          this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
+          
+        }).catch(()=>{
+          message.error('Product not Deleted');
+        });
+      }
+     cancel = (e) => {
+          message.error('Canceled');
+          this.setState({ disabled:true ,selectedRowKeys:[]});
+     }
+
+     ShowProduct = async (id) => {
+         let res = await this.props.fetchOneProduct({id})
+         this.setState({Product:res})
+         console.log(this.state.Product)
+         this.toggleShowModal()
+     }
+      
   render() {
+    const columns = [
+      { title: 'Name', dataIndex: 'name', key: 'name' },
+      { title: 'Category', dataIndex: 'category', key: 'age' },
+      { title: 'SubCategory', dataIndex: 'subcategory', key: 'subcategory' },
+      { title: 'Price', dataIndex: 'price', key: 'price' },
+      { title: 'Discount Price', dataIndex: 'discount_price', key: 'discount_price' },
+      {
+        title: 'InStock', dataIndex: 'inStock', key: 'inStock', render: (record) => (
+        record === true ?  
+        <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
+        <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
+      },
+      { title: 'Views', dataIndex: 'views', key: 'views' },
+      { title: 'Brand', dataIndex: 'brand', key: 'brand' },
+      { title: 'Url', dataIndex: 'productUrl', key: 'productUrl' },
+      { title: 'Created', dataIndex: 'createdAt', key: 'createdAt' },
+      { title: 'Updated', dataIndex: 'updatedAt', key: 'updatedAt' },
+      {
+        title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
+          <Button><Icon type="edit" />Edit</Button>
+            <Divider type="vertical" />
+          <Button onClick={(e)=>{this.ShowProduct(id)}}><Icon type="eye" />Show</Button>
+        </span>),
+        width:200
+      },
+    ];
     const { selectedRowKeys } = this.state;
     const rowSelection = {
         selectedRowKeys,
@@ -90,27 +151,37 @@ const columns = [
         wrapperCol: { span: 14 },
       };
     return (
-      <>
+      <div>
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
-                <Button onClick={this.toggleshowModal} type="primary" icon="plus">
-                  Add Product
+                <Button onClick={this.toggleAddModal} type="primary" icon="plus">
+                 Add Product
                 </Button>
+            </FormItem>
+            <FormItem>
+            <Popconfirm title="Are you sure?" onConfirm={ (e) => this.confirm(this.state.selectedRowKeys)} onCancel={this.cancel} okText="Yes" cancelText="No">
+            <Badge count={this.state.selectedRowKeys.length}>
+              <Button disabled={this.state.disabled} type="danger" loading={this.state.loadingb}>
+                Delete                      
+              </Button>
+            </Badge>
+            </Popconfirm>
             </FormItem>
         </Form>
        
-        <AddProduct toggleshowModal={this.toggleshowModal} visible={this.state.visible} />
+        <AddProduct toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
+        <ShowProduct Category={this.state.Product} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
         <Table
-        size="small"
-        rowKey={record => record.id}
-        columns={columns}
-        dataSource={this.props.products}
-        pagination={this.state.pagination}
-        rowSelection={rowSelection}
-        loading={this.state.loading}
-        onChange={this.handleTableChange}
+          size="small"
+          rowKey={record => record.id}
+          columns={columns}
+          dataSource={this.props.products}
+          pagination={this.state.pagination}
+          rowSelection={rowSelection}
+          loading={this.state.loading}
+          onChange={this.handleTableChange}
        />
-      </>
+      </div>
     )
   }
 }
@@ -121,4 +192,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchProducts })(productslist)
+export default connect(mapStateToProps, { fetchProducts  , loadProducts  , DeleteProduct , fetchOneProduct , toggleIsLoading })(productslist)

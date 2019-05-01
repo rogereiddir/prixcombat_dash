@@ -1,39 +1,28 @@
 import React, { Component } from 'react';
-import Navbar from './navbar';
-import Sidemenu from './sidemenu';
+import NavBar from './navbar';
+import SideMenu from './sidemenu';
 import { Layout } from 'antd';
 import { connect } from "react-redux";
-import {Switch, Route ,withRouter } from "react-router-dom";
-import ProductsList from '../components/productslist';
-import CategoriesList from '../components/categorylist';
+import { withRouter } from "react-router-dom";
 const { Content, Footer } = Layout;
 
 
  class main extends Component {
- 
+ componentWillUnmount(){
+        console.log('ok')
+      }
   render() {
     let path = this.props.location.pathname.split('/')[1]
     return (
     <Layout style={{ minHeight: '100vh' }}>
-          <Navbar/>
+          <NavBar/>
           <Layout>
-            <Sidemenu path={path}/>
+            <SideMenu path={path}/>
             <Layout>
               <Content style={{ margin: '10px 16px' }}>
-                  <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
-                  <Switch>
-                    <Route
-                      exact
-                      path="/products"
-                      render={props => <ProductsList {...props} />}
-                    />
-                    <Route
-                      exact
-                      path="/categories"
-                      render={props => <CategoriesList {...props} />}
-                    />
-                  </Switch>
-                  </div>
+                <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
+                  {this.props.children}
+                </div>
               </Content>
               <Footer style={{ textAlign: 'center' }}>
                   Prixcombat ©2019 Created by Abdeljalil

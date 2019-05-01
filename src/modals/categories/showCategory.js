@@ -13,7 +13,7 @@ import { Modal , Card} from 'antd';
     return (
     <Modal
       width={800}
-      title="Add Category"
+      title="Show Category"
       visible={showvisible}
       onOk={handleOk}
       onCancel={handleCancel}

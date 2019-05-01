@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import { Modal,Form, Select, Switch, Button, Upload, Icon,Input,message} from 'antd';
 import { connect } from "react-redux";
-import { fetchProducts  , loadProducts  , CreateProduct } from "../store/actions/products";
+import { fetchProducts  , loadProducts  , UpdateProduct } from "../store/actions/products";
 const { Option } = Select;
 const { TextArea } = Input;
-class addProduct extends Component {
+class editProduct extends Component {
     state = {
         confirmLoading:false
     }
@@ -17,7 +17,7 @@ class addProduct extends Component {
           if (!err) {
             const { dispatch } = this.props;
             console.log('Received values of form: ', values);
-            dispatch(CreateProduct({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+            dispatch(UpdateProduct({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
             .then(async()=> {
               let res = await dispatch(fetchProducts())
               dispatch(loadProducts(res));
@@ -205,6 +205,6 @@ class addProduct extends Component {
   }
 }
 
-const AddProduct = Form.create({ name: 'validate_other' })(addProduct);
+const EditProduct = Form.create({ name: 'validate_other' })(editProduct);
 
-export default connect()(AddProduct)
+export default connect()(EditProduct)

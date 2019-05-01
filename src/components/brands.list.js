@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
-import AddCategory from '../modals/categories/addCategory';
-import ShowCategory from '../modals/categories/showCategory';
+import { Table ,Form , Button , Badge , Icon , Popconfirm ,message } from 'antd';
+import AddBrand from '../modals/brands/addBrand';
 import { connect } from "react-redux";
-import {isEmpty} from 'underscore'
+import {isEmpty} from 'underscore';
+import { fetchBrands  , loadBrands  , DeleteBrand , fetchOneBrand  }from "../store/actions/brands";
 const FormItem = Form.Item;
 
 class brandslist extends Component {
@@ -15,7 +15,6 @@ class brandslist extends Component {
         addvisible:false,
         showvisible:false,
         disabled:true,
-        Category:{}
       };
       
       onSelectChange = (selectedRowKeys) => {
@@ -37,10 +36,10 @@ class brandslist extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchCategories() 
+        this.props.fetchBrands() 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadCategories(res);
+          this.props.loadBrands(res);
           const pagination = { ...this.state.pagination };
           console.log(res)
           pagination.total = Number(res.total);
@@ -64,10 +63,10 @@ class brandslist extends Component {
           filter: {...filters},
         }
         this.setState({ loading: true });
-        this.props.fetchCategories(params) 
+        this.props.fetchBrands(params) 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadCategories(res);
+          this.props.loadBrands(res);
         })
         .catch(err => {
           console.log(err)
@@ -75,47 +74,30 @@ class brandslist extends Component {
       }
        confirm = (e) => {
         this.setState({ loading: true });
-        this.props.DeleteCategory({ids:e})
+        this.props.DeleteBrand({ids:e})
         .then( async ()=>{
-          let res = await this.props.fetchCategories()
-          this.props.loadCategories(res);
-          message.success('Category Deleted');
+          let res = await this.props.fetchBrands()
+          this.props.loadBrands(res);
+          message.success('Brand Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
           
         }).catch(()=>{
-          message.error('Category not Deleted');
+          message.error('Brand not Deleted');
         });
       }
      cancel = (e) => {
           message.error('Canceled');
           this.setState({ disabled:true ,selectedRowKeys:[]});
      }
-
-     ShowCategory = async (id) => {
-         let res = await this.props.fetchOneCategories({id})
-         this.setState({Category:res})
-         console.log(this.state.Category)
-         this.toggleShowModal()
-     }
       
   render() {
     const columns = [
       { title: 'Name', dataIndex: 'name', key: 'name' },
-      { title: 'Slug', dataIndex: 'slug', key: 'slug' },
-      { title: 'Description', dataIndex: 'description', key: 'description' },
-      {
-        title: 'IsActive', dataIndex: 'isActive', key: 'isActive', render: (record) => (
-        record === true ?  
-        <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
-        <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
-      },
       { title: 'Created At', dataIndex: 'createdAt', key: 'createdAt' },
       { title: 'Updated At', dataIndex: 'updatedAt', key: 'updatedAt' },
       {
         title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
           <Button><Icon type="edit" />Edit</Button>
-            <Divider type="vertical" />
-          <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
         </span>),
         width:200
       },
@@ -145,7 +127,7 @@ class brandslist extends Component {
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
                 <Button onClick={this.toggleAddModal} type="primary" icon="plus">
-                Add Category
+                Add Brand
                 </Button>
             </FormItem>
             <FormItem>
@@ -159,13 +141,12 @@ class brandslist extends Component {
             </FormItem>
         </Form>
        
-        <AddCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
-        <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
+        <AddBrand toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
         <Table
           size="small"
           rowKey={record => record.id}
           columns={columns}
-          dataSource={this.props.categories}
+          dataSource={this.props.brands}
           pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
@@ -182,4 +163,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(brandslist)
+export default connect(mapStateToProps,{ fetchBrands  , loadBrands  , DeleteBrand , fetchOneBrand  } )(brandslist)

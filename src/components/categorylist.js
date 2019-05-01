@@ -2,8 +2,9 @@ import React, { Component } from 'react'
 import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
 import AddCategory from '../modals/categories/addCategory';
 import ShowCategory from '../modals/categories/showCategory';
+import EditCategory from '../modals/categories/editCategory';
 import { connect } from "react-redux";
-import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategories } from "../store/actions/categories";
+import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategory } from "../store/actions/categories";
 import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
@@ -16,6 +17,7 @@ class categorylist extends Component {
         loadingb:false,
         addvisible:false,
         showvisible:false,
+        editvisible:false,
         disabled:true,
         Category:{}
       };
@@ -38,13 +40,17 @@ class categorylist extends Component {
           showvisible:!this.state.showvisible,
         });
       }
+      toggleEditModal = () => {
+        this.setState({
+          editvisible:!this.state.editvisible,
+        });
+      }
       componentDidMount() {
         this.props.fetchCategories() 
         .then(res => {
           this.setState({ loading: false });
           this.props.loadCategories(res);
           const pagination = { ...this.state.pagination };
-          console.log(res)
           pagination.total = Number(res.total);
           this.setState({
             pagination,
@@ -94,11 +100,16 @@ class categorylist extends Component {
      }
 
      ShowCategory = async (id) => {
-         let res = await this.props.fetchOneCategories({id})
+         let res = await this.props.fetchOneCategory({id})
          this.setState({Category:res})
          console.log(this.state.Category)
          this.toggleShowModal()
      }
+     EditCategory = async (id) => {
+      let res = await this.props.fetchOneCategory({id})
+      this.setState({Category:res})
+      this.toggleEditModal()
+    }
       
   render() {
     const columns = [
@@ -115,7 +126,7 @@ class categorylist extends Component {
       { title: 'Updated At', dataIndex: 'updatedAt', key: 'updatedAt' },
       {
         title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
-          <Button><Icon type="edit" />Edit</Button>
+          <Button onClick={(e)=>{this.EditCategory(id)}}><Icon type="edit" />Edit</Button>
             <Divider type="vertical" />
           <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
         </span>),
@@ -163,6 +174,7 @@ class categorylist extends Component {
        
         <AddCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
         <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
+        <EditCategory Category={this.state.Category} toggleEditModal={this.toggleEditModal} editvisible={this.state.editvisible} />
         <Table
           size="small"
           rowKey={record => record.id}
@@ -184,4 +196,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchCategories , loadCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategories })(categorylist)
+export default connect(mapStateToProps, { fetchCategories , loadCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategory })(categorylist)

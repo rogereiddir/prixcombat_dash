@@ -21,6 +21,12 @@ export const DeleteCategory = (params) => {
   };
 };
 
+export const UpdateCategory = (params) => {
+  return dispatch => {
+    return dataProvider(apiUrl, "UPDATE", "admin/categories", params)
+  };
+};
+
 export const fetchCategories = (params = {
   pagination: { page: 1, perPage: 10 },
   sort: { field: 'name' , order: 'ASC' },
@@ -32,7 +38,7 @@ export const fetchCategories = (params = {
 };
 
 
-export const fetchOneCategories = (params) => {
+export const fetchOneCategory = (params) => {
   return dispatch => {
     return dataProvider(apiUrl, "GET_ONE", "admin/categories", params)
   };

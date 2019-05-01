@@ -28,9 +28,17 @@ export default class sidemenu extends Component {
               defaultOpenKeys={['sub1']}
               style={{ height: '100%', borderRight: 0 }}
             >
+            <Menu.Item key="dashboard">
+             <Link to="/dashboard">
+                <Icon type="windows" />
+                 <span>Dashboard</span>
+                </Link>
+             </Menu.Item>
             <Menu.Item key="users">
+             <Link to="/users">
                 <Icon type="user" />
                 <span>Users</span>
+                </Link>
              </Menu.Item>
              <Menu.Item key="products">
              <Link to="/products">
@@ -45,12 +53,16 @@ export default class sidemenu extends Component {
                </Link>
              </Menu.Item>
              <Menu.Item key="shops">
+             <Link to="/shops">
                 <Icon type="shop" />
                 <span>Shops</span>
+                </Link>
              </Menu.Item>
              <Menu.Item key="brands">
+             <Link to="/brands">
                 <Icon type="star" />
                 <span>Brands</span>
+                </Link>
              </Menu.Item>
             </Menu>
         </Sider>

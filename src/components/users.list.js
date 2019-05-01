@@ -1,9 +1,8 @@
 import React, { Component } from 'react'
-import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
-import AddCategory from '../modals/categories/addCategory';
-import ShowCategory from '../modals/categories/showCategory';
+import { Table ,Form , Button , Badge , Icon , Popconfirm ,message } from 'antd';
+import AddUser from '../modals/users/addUser';
 import { connect } from "react-redux";
-import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategories } from "../store/actions/categories";
+import { fetchUsers  , loadUsers , DeleteUser  } from "../store/actions/users";
 import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
@@ -17,7 +16,6 @@ class usersList extends Component {
         addvisible:false,
         showvisible:false,
         disabled:true,
-        Category:{}
       };
       
       onSelectChange = (selectedRowKeys) => {
@@ -39,10 +37,10 @@ class usersList extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchCategories() 
+        this.props.fetchUsers() 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadCategories(res);
+          this.props.loadUsers(res);
           const pagination = { ...this.state.pagination };
           console.log(res)
           pagination.total = Number(res.total);
@@ -66,10 +64,10 @@ class usersList extends Component {
           filter: {...filters},
         }
         this.setState({ loading: true });
-        this.props.fetchCategories(params) 
+        this.props.fetchUsers(params) 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadCategories(res);
+          this.props.loadUsers(res);
         })
         .catch(err => {
           console.log(err)
@@ -77,36 +75,30 @@ class usersList extends Component {
       }
        confirm = (e) => {
         this.setState({ loading: true });
-        this.props.DeleteCategory({ids:e})
+        this.props.DeleteUser({ids:e})
         .then( async ()=>{
-          let res = await this.props.fetchCategories()
-          this.props.loadCategories(res);
-          message.success('Category Deleted');
+          let res = await this.props.fetchUsers()
+          this.props.loadUsers(res);
+          message.success('Users Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
           
         }).catch(()=>{
-          message.error('Category not Deleted');
+          message.error('Users not Deleted');
         });
       }
      cancel = (e) => {
           message.error('Canceled');
           this.setState({ disabled:true ,selectedRowKeys:[]});
      }
-
-     ShowCategory = async (id) => {
-         let res = await this.props.fetchOneCategories({id})
-         this.setState({Category:res})
-         console.log(this.state.Category)
-         this.toggleShowModal()
-     }
       
   render() {
     const columns = [
       { title: 'Name', dataIndex: 'name', key: 'name' },
-      { title: 'Slug', dataIndex: 'slug', key: 'slug' },
-      { title: 'Description', dataIndex: 'description', key: 'description' },
+      { title: 'User Name', dataIndex: 'username', key: 'username' },
+      { title: 'Email', dataIndex: 'email', key: 'email' },
+      { title: 'Role', dataIndex: 'role', key: 'role' },
       {
-        title: 'IsActive', dataIndex: 'isActive', key: 'isActive', render: (record) => (
+        title: 'isAdmin', dataIndex: 'isAdmin', key: 'isAdmin', render: (record) => (
         record === true ?  
         <Icon type="check-circle" theme="twoTone" twoToneColor="#52c41a" /> : 
         <Icon type="exclamation-circle" theme="twoTone" twoToneColor="#eb2f96" /> ),
@@ -116,8 +108,6 @@ class usersList extends Component {
       {
         title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
           <Button><Icon type="edit" />Edit</Button>
-            <Divider type="vertical" />
-          <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
         </span>),
         width:200
       },
@@ -147,7 +137,7 @@ class usersList extends Component {
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
                 <Button onClick={this.toggleAddModal} type="primary" icon="plus">
-                Add Category
+                Add User
                 </Button>
             </FormItem>
             <FormItem>
@@ -161,13 +151,12 @@ class usersList extends Component {
             </FormItem>
         </Form>
        
-        <AddCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
-        <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
+        <AddUser toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
         <Table
           size="small"
           rowKey={record => record.id}
           columns={columns}
-          dataSource={this.props.categories}
+          dataSource={this.props.users}
           pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
@@ -184,4 +173,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps)(usersList)
+export default connect(mapStateToProps, { fetchUsers  ,toggleIsLoading, loadUsers , DeleteUser  } )(usersList)

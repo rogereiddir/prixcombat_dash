@@ -39,9 +39,10 @@ export function dataProvider(apiUrl , type , path , params) {
         data = params.data;
         break;
     case "UPDATE":
-        url = `${apiUrl}/${path}/${params.id}`;
+        console.log(params.data)
+        url = `${apiUrl}/${path}/${params.data.id}`;
         method = 'PUT';
-        data = JSON.stringify(params.data);
+        data = params.data;
         break;
     case "DELETE":
         url = `${apiUrl}/${path}/${params.id}`;
@@ -84,7 +85,7 @@ export function dataProvider(apiUrl , type , path , params) {
         return resolve(res.data);
       })
       .catch(err => {
-        return reject(err.response.data.error);
+        return reject(err.response.data);
       });
   });
 }

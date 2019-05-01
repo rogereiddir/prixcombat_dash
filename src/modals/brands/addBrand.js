@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import { Modal,Form, Switch, Button, Upload, Icon,Input , message} from 'antd';
-import { CreateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
+import { Modal,Form, Button, Upload, Icon,Input , message} from 'antd';
+import { CreateBrand , fetchBrands,loadBrands} from "../../store/actions/brands";
 import { connect } from "react-redux";
-const { TextArea } = Input;
 
-class addCategory extends Component {
+
+class addBrand extends Component {
     state = {
         confirmLoading:false,
         fileList: []
@@ -18,23 +18,11 @@ class addCategory extends Component {
             if (!err) {
               const { dispatch } = this.props;
               console.log('Received values of form: ', values);
-              // const formdata = new FormData()
-
-              // for ( var key in values ) {
-              //   formdata.append(key, values[key]);
-              // }
-
-              // formdata.delete('picture')
-              // formdata.append('picture',values.picture.file);
-
-              // for (var pair of formdata.entries()) {
-              //   console.log(pair[0]+ ', ' +pair[1]); 
-              // }
-
-              dispatch(CreateCategory({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+      
+              dispatch(CreateBrand({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
               .then(async()=> {
-                let res = await dispatch(fetchCategories())
-                dispatch(loadCategories(res));
+                let res = await dispatch(fetchBrands())
+                dispatch(loadBrands(res));
                 this.props.toggleAddModal()
                 message.success('Created successfully.')
                 this.setState({
@@ -90,34 +78,21 @@ class addCategory extends Component {
             {getFieldDecorator('name', {
                 rules: [{
                 required: true,
-                message: 'Please enter your Category Name',
+                message: 'Please enter your Brand Name',
                 whitespace:true
                 }],
             })(
-                <Input placeholder="Please enter your Category Name" />
+                <Input placeholder="Please enter your Brand Name" />
             )}
         </Form.Item>
-
-        <Form.Item {...formItemLayout} label="Slug">
-            {getFieldDecorator('slug', {
-                rules: [{
-                required: true,
-                message: 'Please enter your Category Name',
-                whitespace:true
-                }],
-            })(
-                <Input placeholder="Please enter your Category Name" />
-            )}
-        </Form.Item>
-
         <Form.Item
           label="Upload"
-          extra="Category picture"
+          extra="Brand picture"
         >
           {getFieldDecorator('picture', {
             rules: [{
              required: true,
-             message: 'Please enter your Category picture',
+             message: 'Please enter your Brand picture',
             }],
             valuePropName: 'setFieldsValue',
           })(
@@ -128,28 +103,6 @@ class addCategory extends Component {
             </Upload>
           )}
         </Form.Item>
-        
-        <Form.Item
-          label="Description"
-        >
-        {getFieldDecorator('description', {
-                rules: [{
-                required: true,
-                message: 'Please enter your Category description',
-                whitespace:true
-                }],
-            })(
-                <TextArea placeholder="Please enter your Category description" rows={4} /> 
-            )}
-        </Form.Item>
-
-        <Form.Item
-          label="isActive"
-        >
-          {getFieldDecorator('isActive', { valuePropName: 'checked', initialValue:false })(
-            <Switch />
-          )}
-        </Form.Item>
 
       </Form>
     </Modal>
@@ -157,6 +110,6 @@ class addCategory extends Component {
   }
 }
 
-const AddCategoryModal = Form.create({ name: 'validate_other' })(addCategory);
+const AddBrandModal = Form.create({ name: 'validate_other' })(addBrand);
 
-export default connect()(AddCategoryModal)
+export default connect()(AddBrandModal)
