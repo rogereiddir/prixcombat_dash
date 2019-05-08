@@ -38,6 +38,11 @@ export function dataProvider(apiUrl , type , path , params) {
         method = 'POST';
         data = params.data;
         break;
+    case "AUTH":
+        url = `${apiUrl}/${path}`;
+        method = 'POST';
+        data = params.data;
+        break;
     case "UPDATE":
         console.log(params.data)
         url = `${apiUrl}/${path}/${params.data.id}`;

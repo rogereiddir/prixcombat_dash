@@ -86,7 +86,6 @@ class productslist extends Component {
           this.props.loadProducts(res);
           message.success('Product Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
-          
         }).catch(()=>{
           message.error('Product not Deleted');
         });

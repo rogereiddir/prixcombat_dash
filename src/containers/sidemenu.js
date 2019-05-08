@@ -1,11 +1,14 @@
 import React, { Component } from 'react'
 import {Layout, Menu, Icon} from 'antd';
-import { Link } from "react-router-dom";
+import { Link , withRouter} from "react-router-dom";
+import { connect } from "react-redux";
+import  { logout } from "../store/actions/users";
+
 const { Sider } = Layout;
 
 
 
-export default class sidemenu extends Component {
+class sidemenu extends Component {
     state = {
         collapsed: false,
     };
@@ -14,7 +17,16 @@ export default class sidemenu extends Component {
         console.log(collapsed);
         this.setState({ collapsed });
     }
+    logout = () => {
+     let {dispatch} = this.props
+     dispatch(logout())
+     this.props.history.push('/');
+    }
+    
   render() {
+    let { match } = this.props;
+    console.log(match)
+    let path = this.props.location.pathname.split('/')[1];
     return (
      <Sider 
         collapsible
@@ -24,12 +36,11 @@ export default class sidemenu extends Component {
          <Menu
               theme="dark"
               mode="inline"
-              defaultSelectedKeys={[this.props.path]}
-              defaultOpenKeys={['sub1']}
+              defaultSelectedKeys={[path]}
               style={{ height: '100%', borderRight: 0 }}
             >
             <Menu.Item key="dashboard">
-             <Link to="/dashboard">
+              <Link to={`/dashboard`}>
                 <Icon type="windows" />
                  <span>Dashboard</span>
                 </Link>
@@ -41,7 +52,7 @@ export default class sidemenu extends Component {
                 </Link>
              </Menu.Item>
              <Menu.Item key="products">
-             <Link to="/products">
+             <Link to={`/products`}>
                 <Icon type="shopping-cart" />
                 <span>Products</span>
               </Link>
@@ -64,8 +75,16 @@ export default class sidemenu extends Component {
                 <span>Brands</span>
                 </Link>
              </Menu.Item>
+             <Menu.Item onClick={this.logout} key="logout">
+                <Icon type="logout" />
+                <span>Log Out</span>
+             </Menu.Item>
             </Menu>
         </Sider>
     )
   }
 }
+
+export default withRouter(
+  connect()(sidemenu)
+ );

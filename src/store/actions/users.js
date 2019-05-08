@@ -1,8 +1,27 @@
 import { dataProvider } from "../../services/dataProvider";
-import { LOAD_USERS } from "../actionTypes";
+import { LOAD_USERS , SET_CURRENT_USER } from "../actionTypes";
+import {setTokenHeader} from '../../services/dataProvider'
 
 let apiUrl = 'http://localhost:5000';
 
+export function setAuthorizationToken(token) {
+  setTokenHeader(token);
+}
+
+export function logout() {
+  return dispatch => {
+    localStorage.clear();
+    setAuthorizationToken(false);
+    dispatch(setCurrentUser({}));
+  };
+}
+
+export function setCurrentUser(user) {
+  return {
+    type: SET_CURRENT_USER,
+    user
+  };
+}
 
 export const loadUsers = users => ({
     type: LOAD_USERS,

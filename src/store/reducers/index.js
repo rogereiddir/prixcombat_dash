@@ -5,6 +5,7 @@ import {shops} from "./shops";
 import {brands} from "./brands";
 import {users} from "./users";
 import {loading} from "./isloading";
+import {user} from "./auth";
 
 const rootReducer = combineReducers({
   products,
@@ -12,7 +13,8 @@ const rootReducer = combineReducers({
   shops,
   brands,
   users,
-  loading
+  loading,
+  user
 });
 
 export default rootReducer;

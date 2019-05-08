@@ -1,25 +1,45 @@
 import React from "react";
 import { Route, Redirect } from "react-router-dom";
-import auth from "./auth";
+import { Layout } from 'antd';
+import { connect } from "react-redux";
+// import auth from "./auth";
+import NavBar from '../containers/navbar';
+import SideMenu from '../containers/sidemenu';
+const { Content, Footer } = Layout;
 
-export const ProtectedRoute = ({
-  component: Component,
-  ...rest
-}) => {
+export const ProtectedRoute = ({ component: Component,isAuthenticated, ...rest,}) => {
+  console.log(isAuthenticated)
   return (
     <Route
       {...rest}
       render={props => {
-        if (auth.isAuthenticated()) {
-          return <Component {...props} />;
+        
+        if (isAuthenticated) {
+          
+          return(
+          <Layout style={{ minHeight: '100vh' }}>
+            <NavBar/>
+            <Layout>
+              <SideMenu/>
+              <Layout>
+                <Content style={{ margin: '10px 16px' }}>
+                  <div style={{ padding: 24, background: '#fff', minHeight: 360 }}>
+                          <Component {...props} />
+                  </div>
+                </Content>
+              <Footer style={{ textAlign: 'center' }}>
+                  Prixcombat ©2019 Created by Abdeljalil
+              </Footer>
+            </Layout>
+          </Layout>
+         </Layout>
+          )
         } else {
           return (
             <Redirect
               to={{
                 pathname: "/",
-                state: {
-                  from: props.location
-                }
+                state: { from: props.location }
               }}
             />
           );
@@ -28,3 +48,9 @@ export const ProtectedRoute = ({
     />
   );
 };
+
+function mapStateToProps(state) {
+  return { isAuthenticated: state.user.isAuthenticated };
+}
+
+export default connect(mapStateToProps)(ProtectedRoute);
