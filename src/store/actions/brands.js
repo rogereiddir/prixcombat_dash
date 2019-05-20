@@ -1,7 +1,7 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_BRANDS } from "../actionTypes";
 
-let apiUrl = 'http://localhost:5000';
+let apiUrl = 'http://192.168.99.101:5000';
 
 
 export const loadBrands = brands => ({

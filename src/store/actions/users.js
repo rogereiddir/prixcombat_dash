@@ -2,17 +2,15 @@ import { dataProvider } from "../../services/dataProvider";
 import { LOAD_USERS , SET_CURRENT_USER } from "../actionTypes";
 import {setTokenHeader} from '../../services/dataProvider'
 
-let apiUrl = 'http://localhost:5000';
+let apiUrl = 'http://192.168.99.101:5000';
 
 export function setAuthorizationToken(token) {
   setTokenHeader(token);
 }
 
-export function logout() {
+export function userLogout() {
   return dispatch => {
-    localStorage.clear();
-    setAuthorizationToken(false);
-    dispatch(setCurrentUser({}));
+    return dataProvider(apiUrl, "LOGOUT", "users/auth/signout")
   };
 }
 

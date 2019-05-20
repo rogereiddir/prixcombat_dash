@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import {Layout, Menu, Icon} from 'antd';
+import {Layout, Menu, Icon , message} from 'antd';
 import { Link , withRouter} from "react-router-dom";
 import { connect } from "react-redux";
-import  { logout } from "../store/actions/users";
+import  { userLogout , setCurrentUser , setAuthorizationToken} from "../store/actions/users";
 
 const { Sider } = Layout;
 
@@ -19,8 +19,15 @@ class sidemenu extends Component {
     }
     logout = () => {
      let {dispatch} = this.props
-     dispatch(logout())
-     this.props.history.push('/');
+     dispatch(userLogout())
+     .then((res)=>{
+      localStorage.clear();
+      setAuthorizationToken(false);
+      dispatch(setCurrentUser({}));
+      this.props.history.push('/');
+      message.success(res.message)
+    })
+    
     }
     
   render() {

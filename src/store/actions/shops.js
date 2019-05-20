@@ -1,7 +1,14 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_SHOPS } from "../actionTypes";
 
-let apiUrl = 'http://localhost:5000';
+let apiUrl = 'http://192.168.99.101:5000';
+
+
+export function shopLogout() {
+  return dispatch => {
+    return dataProvider(apiUrl, "LOGOUT", "users/auth/signout")
+  };
+}
 
 
 export const loadShops = shops => ({

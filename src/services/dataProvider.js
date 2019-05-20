@@ -43,6 +43,10 @@ export function dataProvider(apiUrl , type , path , params) {
         method = 'POST';
         data = params.data;
         break;
+    case "LOGOUT":
+        url = `${apiUrl}/${path}`;
+        method = 'POST';
+        break;
     case "UPDATE":
         console.log(params.data)
         url = `${apiUrl}/${path}/${params.data.id}`;
