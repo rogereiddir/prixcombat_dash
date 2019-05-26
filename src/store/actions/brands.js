@@ -1,7 +1,7 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_BRANDS } from "../actionTypes";
 
-let apiUrl = 'http://192.168.99.101:5000';
+let apiUrl = 'http://localhost:5000';
 
 
 export const loadBrands = brands => ({
@@ -22,7 +22,7 @@ export const DeleteBrand= (params) => {
 };
 
 export const fetchBrands = (params = {
-  pagination: { page: 1, perPage: 10 },
+  pagination: { page: 1, perPage: 11 },
   sort: { field: 'name' , order: 'ASC' },
   filter: {},
 }) => {

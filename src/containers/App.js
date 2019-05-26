@@ -5,8 +5,10 @@ import { Provider } from "react-redux";
 import { Switch , Route , BrowserRouter as Router  } from "react-router-dom";
 import Login from '../components/login';
 import ProtectedRoute from '../hocs/withAuth'
+import AdminProtectedRoute from '../hocs/withAuthAdmin'
 import ProductsList from '../components/productslist';
 import CategoriesList from '../components/categorylist';
+import SubCategoriesList from '../components/subcategorylist';
 import ShopsList from '../components/shops.list';
 import UsersList from '../components/users.list';
 import BrandsList from '../components/brands.list';
@@ -35,10 +37,11 @@ class App extends Component {
             <Route exact path="/" component={Login}/>
             <ProtectedRoute exact path="/dashboard" component={Dashboard}/>
             <ProtectedRoute exact path="/products" component={ProductsList}/>
-            <ProtectedRoute exact path="/categories" component={CategoriesList}/>
-            <ProtectedRoute exact path="/users" component={UsersList}/>
-            <ProtectedRoute exact path="/brands" component={BrandsList}/>
-            <ProtectedRoute exact path="/shops" component={ShopsList}/>
+            <AdminProtectedRoute exact path="/categories" component={CategoriesList}/>
+            <AdminProtectedRoute exact path="/subcategories" component={SubCategoriesList}/>
+            <AdminProtectedRoute exact path="/users" component={UsersList}/>
+            <AdminProtectedRoute exact path="/brands" component={BrandsList}/>
+            <AdminProtectedRoute exact path="/shops" component={ShopsList}/>
           </Switch>
         </Router>
        </Provider>

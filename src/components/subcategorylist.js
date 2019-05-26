@@ -1,12 +1,13 @@
 import React, { Component } from 'react'
-import { Table ,Form , Button , Badge , Icon , Popconfirm ,message } from 'antd';
-import AddBrand from '../modals/brands/addBrand';
+import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
 import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
-import { fetchBrands  , loadBrands  , DeleteBrand , fetchOneBrand  }from "../store/actions/brands";
+import AddSubCategory from '../modals/subcategories/addSubCategory'
+import { fetchSubcategories  , loadSubCategories , DeleteSubCategory , fetchOneSubCategory } from "../store/actions/subcategories";
+
 const FormItem = Form.Item;
 
-class brandslist extends Component {
+class subcategorylist extends Component {
     state = {
         pagination: {},
         selectedRowKeys: [],
@@ -14,7 +15,9 @@ class brandslist extends Component {
         loadingb:false,
         addvisible:false,
         showvisible:false,
+        editvisible:false,
         disabled:true,
+        Category:{}
       };
       
       onSelectChange = (selectedRowKeys) => {
@@ -35,14 +38,18 @@ class brandslist extends Component {
           showvisible:!this.state.showvisible,
         });
       }
+      toggleEditModal = () => {
+        this.setState({
+          editvisible:!this.state.editvisible,
+        });
+      }
       componentDidMount() {
-        this.props.fetchBrands() 
+        this.props.fetchSubcategories() 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadBrands(res);
+          this.props.loadSubCategories(res);
           const pagination = { ...this.state.pagination };
-         
-          pagination.total = Number(res.range);
+          pagination.total = Number(res.total);
           this.setState({
             pagination,
           });
@@ -58,16 +65,15 @@ class brandslist extends Component {
           pagination: pager,
         });
         let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize + 1 },
+          pagination: { page: pagination.current, perPage: pagination.pageSize },
           sort: { field: "name" , order: 'ASC' },
           filter: {...filters},
         }
         this.setState({ loading: true });
-        console.log(params)
-        this.props.fetchBrands(params) 
+        this.props.fetchSubcategories(params) 
         .then(res => {
           this.setState({ loading: false });
-          this.props.loadBrands(res);
+          this.props.loadSubCategories(res);
         })
         .catch(err => {
           console.log(err)
@@ -75,21 +81,33 @@ class brandslist extends Component {
       }
        confirm = (e) => {
         this.setState({ loading: true });
-        this.props.DeleteBrand({ids:e})
+        this.props.DeleteSubCategory({ids:e})
         .then( async ()=>{
-          let res = await this.props.fetchBrands()
-          this.props.loadBrands(res);
-          message.success('Brand Deleted');
+          let res = await this.props.fetchSubcategories()
+          this.props.loadSubCategories(res);
+          message.success('Category Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
           
         }).catch(()=>{
-          message.error('Brand not Deleted');
+          message.error('Category not Deleted');
         });
       }
      cancel = (e) => {
           message.error('Canceled');
           this.setState({ disabled:true ,selectedRowKeys:[]});
      }
+
+     ShowCategory = async (id) => {
+         let res = await this.props.fetchOneSubCategory({id})
+         this.setState({Category:res})
+         console.log(this.state.Category)
+         this.toggleShowModal()
+     }
+     EditCategory = async (id) => {
+      let res = await this.props.fetchOneSubCategory({id})
+      this.setState({Category:res})
+      this.toggleEditModal()
+    }
       
   render() {
     const columns = [
@@ -98,7 +116,9 @@ class brandslist extends Component {
       { title: 'Updated At', dataIndex: 'updatedAt', key: 'updatedAt' },
       {
         title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
-          <Button><Icon type="edit" />Edit</Button>
+          <Button onClick={(e)=>{this.EditCategory(id)}}><Icon type="edit" />Edit</Button>
+            <Divider type="vertical" />
+          <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
         </span>),
         width:200
       },
@@ -128,7 +148,7 @@ class brandslist extends Component {
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
                 <Button onClick={this.toggleAddModal} type="primary" icon="plus">
-                Add Brand
+                Add Category
                 </Button>
             </FormItem>
             <FormItem>
@@ -142,12 +162,14 @@ class brandslist extends Component {
             </FormItem>
         </Form>
        
-        <AddBrand toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
+        <AddSubCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
+        {/* <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
+        <EditCategory Category={this.state.Category} toggleEditModal={this.toggleEditModal} editvisible={this.state.editvisible} /> */}
         <Table
           size="small"
           rowKey={record => record.id}
           columns={columns}
-          dataSource={this.props.brands}
+          dataSource={this.props.subcategories}
           pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
@@ -157,11 +179,10 @@ class brandslist extends Component {
     )
   }
 }
-
 function mapStateToProps(state) {
   return {
-    brands: state.brands,
+    subcategories: state.subcategories,
   };
 }
 
-export default connect(mapStateToProps,{ fetchBrands  , loadBrands  , DeleteBrand , fetchOneBrand  } )(brandslist)
+export default connect(mapStateToProps,{ fetchSubcategories  , loadSubCategories , DeleteSubCategory , fetchOneSubCategory })(subcategorylist)

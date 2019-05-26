@@ -4,6 +4,7 @@ import auth from "../hocs/auth";
 import { withRouter} from "react-router-dom";
 import { connect } from "react-redux";
 import  {  user_signin  } from "../store/actions/user_auth";
+import  {  shop_signin  } from "../store/actions/shop_auth";
 import  {  setCurrentUser , setAuthorizationToken  } from "../store/actions/users";
 const FormItem = Form.Item;
 const { Content } = Layout;
@@ -15,16 +16,31 @@ class NormalLoginForm extends React.Component {
     this.props.form.validateFields((err, values) => {
       if (!err) {
         console.log("Received values of form: ", values);
+        let {username} = values;
+        if(username ==='admin'){
+          auth.login(values,() =>  { })
+          dispatch(user_signin({data:values}))
+          .then(({token , ...user })=>{
+            localStorage.setItem("jwtToken", token);
+            setAuthorizationToken(token);
+            dispatch(setCurrentUser(user))
+            this.props.history.push('/dashboard');
+          }).catch((err)=>{
+            message.error(err.error.message)
+          })
+        }else{
         auth.login(values,() =>  { })
-         dispatch(user_signin({data:values}))
-        .then(({token , ...user })=>{
-          localStorage.setItem("jwtToken", token);
-          setAuthorizationToken(token);
-          dispatch(setCurrentUser(user))
-          this.props.history.push('/dashboard');
-        }).catch((err)=>{
-          message.error(err.error.message)
-        })
+          dispatch(shop_signin({data:values}))
+          .then(({token , ...user })=>{
+            localStorage.setItem("jwtToken", token);
+            setAuthorizationToken(token);
+            dispatch(setCurrentUser(user))
+            this.props.history.push('/dashboard');
+          }).catch((err)=>{
+            message.error(err.error.message)
+          })
+
+        }
       }
     });
    }

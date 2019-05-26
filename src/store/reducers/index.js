@@ -1,6 +1,7 @@
 import { combineReducers } from "redux";
 import {products} from "./products";
 import {categories} from "./categories";
+import {subcategories} from "./subcategories";
 import {shops} from "./shops";
 import {brands} from "./brands";
 import {users} from "./users";
@@ -12,6 +13,7 @@ const rootReducer = combineReducers({
   categories,
   shops,
   brands,
+  subcategories,
   users,
   loading,
   user

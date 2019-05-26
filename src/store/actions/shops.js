@@ -1,7 +1,7 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_SHOPS } from "../actionTypes";
 
-let apiUrl = 'http://192.168.99.101:5000';
+let apiUrl = 'http://localhost:5000';
 
 
 export function shopLogout() {

@@ -2,7 +2,7 @@ import { dataProvider } from "../../services/dataProvider";
 import { LOAD_USERS , SET_CURRENT_USER } from "../actionTypes";
 import {setTokenHeader} from '../../services/dataProvider'
 
-let apiUrl = 'http://192.168.99.101:5000';
+let apiUrl = 'http://localhost:5000';
 
 export function setAuthorizationToken(token) {
   setTokenHeader(token);
@@ -13,6 +13,13 @@ export function userLogout() {
     return dataProvider(apiUrl, "LOGOUT", "users/auth/signout")
   };
 }
+
+export function shopLogout() {
+  return dispatch => {
+    return dataProvider(apiUrl, "LOGOUT", "shops/auth/signout")
+  };
+}
+
 
 export function setCurrentUser(user) {
   return {

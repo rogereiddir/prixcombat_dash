@@ -91,6 +91,7 @@ export function dataProvider(apiUrl , type , path , params) {
     return axios[method.toLowerCase()](url, data)
       .then(res => {
         // console.log({data:res.data,total:res.headers['content-range'].split('/').pop()})
+        // res.data.range=res.headers['content-range'].split('/').pop()
         return resolve(res.data);
       })
       .catch(err => {

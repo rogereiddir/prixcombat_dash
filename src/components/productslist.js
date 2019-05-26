@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
-import AddProduct from '../modals/categories/addCategory';
-import ShowProduct from '../modals/categories/showCategory';
+import AddProduct from '../modals/products/addProduct';
+import ShowProduct from '../modals/products/showProduct';
 import { connect } from "react-redux";
 import { fetchProducts  , loadProducts  , DeleteProduct , fetchOneProduct  } from "../store/actions/products";
 import { toggleIsLoading } from "../store/actions/isLoading";
@@ -169,7 +169,7 @@ class productslist extends Component {
         </Form>
        
         <AddProduct toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
-        <ShowProduct Category={this.state.Product} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
+        <ShowProduct Product={this.state.Product} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
         <Table
           size="small"
           rowKey={record => record.id}

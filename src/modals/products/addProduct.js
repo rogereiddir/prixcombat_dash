@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Modal,Form, Select, Switch, Button, Upload, Icon,Input,message} from 'antd';
 import { connect } from "react-redux";
-import { fetchProducts  , loadProducts  , CreateProduct } from "../store/actions/products";
+import { fetchProducts  , loadProducts  , CreateProduct } from "../../store/actions/products";
 const { Option } = Select;
 const { TextArea } = Input;
 class addProduct extends Component {
@@ -45,7 +45,7 @@ class addProduct extends Component {
     
     handleCancel = () => {
       console.log('Clicked cancel button');
-      this.props.toggleshowModal()
+      this.props.toggleAddModal()
     }
      
     normFile = (e) => {
@@ -56,18 +56,28 @@ class addProduct extends Component {
       return e && e.fileList;
     }
   render() {
-    let {visible} = this.props;
+    let {addvisible , brands , subcategories , categories} = this.props;
     const { getFieldDecorator } = this.props.form;
     const { confirmLoading } = this.state
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
       };
+
+      const renderOptionBrands = () => {
+        return brands.map ((brand, index) =>  <Option key={index} value={brand.id}>{brand.name}</Option>)
+      }
+      const renderOptionCategory = () => {
+        return categories.map ((cat, index) =>  <Option key={index} value={cat.id}>{cat.name}</Option>)
+      }
+      const renderOptionSubCategory = () => {
+        return subcategories.map ((subcat, index) =>  <Option key={index} value={subcat.id}>{subcat.name}</Option>)
+      }
     return (
     <Modal
       width={800}
       title="Add Product"
-      visible={visible}
+      visible={addvisible}
       onOk={this.handleOk}
       confirmLoading={confirmLoading}
       onCancel={this.handleCancel}
@@ -113,9 +123,8 @@ class addProduct extends Component {
               { required: true, message: 'Please select your country!' },
             ],
           })(
-            <Select placeholder="Please select a country">
-              <Option value="china">China</Option>
-              <Option value="usa">U.S.A</Option>
+            <Select placeholder="Please select a Category">
+             {renderOptionCategory()}
             </Select>
           )}
         </Form.Item>
@@ -130,8 +139,7 @@ class addProduct extends Component {
             ],
           })(
             <Select placeholder="Please select a SubCategory">
-              <Option value="china">China</Option>
-              <Option value="usa">U.S.A</Option>
+              {renderOptionSubCategory()}
             </Select>
           )}
         </Form.Item>
@@ -146,8 +154,7 @@ class addProduct extends Component {
             ],
           })(
             <Select placeholder="Please select a Brand">
-              <Option value="china">China</Option>
-              <Option value="usa">U.S.A</Option>
+               { renderOptionBrands() } 
             </Select>
           )}
         </Form.Item>
@@ -205,6 +212,15 @@ class addProduct extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    brands: state.brands,
+    subcategories:state.subcategories,
+    categories:state.categories,
+    
+  };
+}
+
 const AddProduct = Form.create({ name: 'validate_other' })(addProduct);
 
-export default connect()(AddProduct)
+export default connect(mapStateToProps)(AddProduct)

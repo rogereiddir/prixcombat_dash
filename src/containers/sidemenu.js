@@ -18,22 +18,74 @@ class sidemenu extends Component {
         this.setState({ collapsed });
     }
     logout = () => {
-     let {dispatch} = this.props
-     dispatch(userLogout())
-     .then((res)=>{
-      localStorage.clear();
-      setAuthorizationToken(false);
-      dispatch(setCurrentUser({}));
-      this.props.history.push('/');
-      message.success(res.message)
-    })
+     let {dispatch , role } = this.props
+      if(role === 'admin'){
+        dispatch(userLogout())
+        .then((res)=>{
+        localStorage.clear();
+        setAuthorizationToken(false);
+        dispatch(setCurrentUser({}));
+        this.props.history.push('/');
+        message.success(res.message)
+        })
+      }else{
+        dispatch(userLogout())
+        .then((res)=>{
+        localStorage.clear();
+        setAuthorizationToken(false);
+        dispatch(setCurrentUser({}));
+        this.props.history.push('/');
+        message.success(res.message)
+        })
+      }
     
     }
     
   render() {
-    let { match } = this.props;
+    let { match , role } = this.props;
     console.log(match)
     let path = this.props.location.pathname.split('/')[1];
+    let links = [
+      {
+        link :"products",
+        role:"shop"
+      },
+      {
+        link :"users",
+        role:"admin"
+      },
+      {
+        link :"subcategories",
+        role:"admin"
+      },
+      {
+        link :"categories",
+        role:"admin"
+      },
+      {
+        link :"shops",
+        role:"admin"
+      },
+      {
+        link :"brands",
+        role:"admin"
+      }
+    ]
+    let renderLink = (links) => {
+      return links.map((link,index) => {
+        if(role === link.role){
+          return (
+            <Menu.Item key={link.link}>
+              <Link to={`/${link.link}`}>
+                <Icon type="shopping-cart" />
+                <span>{link.link}</span>
+              </Link> 
+            </Menu.Item> 
+          )
+       }else{}
+       return <div key={index} />
+     }) 
+    }
     return (
      <Sider 
         collapsible
@@ -46,42 +98,7 @@ class sidemenu extends Component {
               defaultSelectedKeys={[path]}
               style={{ height: '100%', borderRight: 0 }}
             >
-            <Menu.Item key="dashboard">
-              <Link to={`/dashboard`}>
-                <Icon type="windows" />
-                 <span>Dashboard</span>
-                </Link>
-             </Menu.Item>
-            <Menu.Item key="users">
-             <Link to="/users">
-                <Icon type="user" />
-                <span>Users</span>
-                </Link>
-             </Menu.Item>
-             <Menu.Item key="products">
-             <Link to={`/products`}>
-                <Icon type="shopping-cart" />
-                <span>Products</span>
-              </Link>
-             </Menu.Item>
-             <Menu.Item key="categories">
-               <Link to="/categories">
-                <Icon type="cluster" />
-                <span>Categories</span>
-               </Link>
-             </Menu.Item>
-             <Menu.Item key="shops">
-             <Link to="/shops">
-                <Icon type="shop" />
-                <span>Shops</span>
-                </Link>
-             </Menu.Item>
-             <Menu.Item key="brands">
-             <Link to="/brands">
-                <Icon type="star" />
-                <span>Brands</span>
-                </Link>
-             </Menu.Item>
+            {renderLink(links)}
              <Menu.Item onClick={this.logout} key="logout">
                 <Icon type="logout" />
                 <span>Log Out</span>
@@ -92,6 +109,9 @@ class sidemenu extends Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {role:state.user.user.role};
+}
 export default withRouter(
-  connect()(sidemenu)
+  connect(mapStateToProps)(sidemenu)
  );
