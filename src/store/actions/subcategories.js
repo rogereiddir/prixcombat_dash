@@ -4,9 +4,9 @@ import { LOAD_SUB_CATEGORIES } from "../actionTypes";
 let apiUrl = 'http://localhost:5000';
 
 
-export const loadSubCategories = categories => ({
+export const loadSubCategories = subcategories => ({
     type: LOAD_SUB_CATEGORIES,
-    categories
+    subcategories
 });
 
 export const CreateSubCategory = (params) => {

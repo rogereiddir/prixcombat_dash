@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
-import { Table ,Form , Button , Divider, Badge , Icon , Popconfirm ,message } from 'antd';
+import { Table ,Form , Button , Badge , Icon , Popconfirm ,message } from 'antd';
 import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
 import AddSubCategory from '../modals/subcategories/addSubCategory'
+import EditSubCategory from '../modals/subcategories/editSubCategory'
 import { fetchSubcategories  , loadSubCategories , DeleteSubCategory , fetchOneSubCategory } from "../store/actions/subcategories";
 
 const FormItem = Form.Item;
@@ -17,7 +18,7 @@ class subcategorylist extends Component {
         showvisible:false,
         editvisible:false,
         disabled:true,
-        Category:{}
+        SubCategory:{}
       };
       
       onSelectChange = (selectedRowKeys) => {
@@ -97,15 +98,9 @@ class subcategorylist extends Component {
           this.setState({ disabled:true ,selectedRowKeys:[]});
      }
 
-     ShowCategory = async (id) => {
-         let res = await this.props.fetchOneSubCategory({id})
-         this.setState({Category:res})
-         console.log(this.state.Category)
-         this.toggleShowModal()
-     }
-     EditCategory = async (id) => {
+     EditSubCategory = async (id) => {
       let res = await this.props.fetchOneSubCategory({id})
-      this.setState({Category:res})
+      this.setState({SubCategory:res})
       this.toggleEditModal()
     }
       
@@ -116,9 +111,7 @@ class subcategorylist extends Component {
       { title: 'Updated At', dataIndex: 'updatedAt', key: 'updatedAt' },
       {
         title: 'Action', dataIndex: '', key: 'x', render: ({id}) => ( <span>
-          <Button onClick={(e)=>{this.EditCategory(id)}}><Icon type="edit" />Edit</Button>
-            <Divider type="vertical" />
-          <Button onClick={(e)=>{this.ShowCategory(id)}}><Icon type="eye" />Show</Button>
+          <Button onClick={(e)=>{this.EditSubCategory(id)}}><Icon type="edit" />Edit</Button>
         </span>),
         width:200
       },
@@ -148,7 +141,7 @@ class subcategorylist extends Component {
         <Form  {...formItemLayout} layout="inline">
             <FormItem  wrapperCol={{ span: 12, offset: 0 }}>
                 <Button onClick={this.toggleAddModal} type="primary" icon="plus">
-                Add Category
+                Add SubCategory
                 </Button>
             </FormItem>
             <FormItem>
@@ -162,9 +155,8 @@ class subcategorylist extends Component {
             </FormItem>
         </Form>
        
-        <AddSubCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
-        {/* <ShowCategory Category={this.state.Category} toggleShowModal={this.toggleShowModal} showvisible={this.state.showvisible} />
-        <EditCategory Category={this.state.Category} toggleEditModal={this.toggleEditModal} editvisible={this.state.editvisible} /> */}
+      <AddSubCategory toggleAddModal={this.toggleAddModal} addvisible={this.state.addvisible} />
+      <EditSubCategory SubCategory={this.state.SubCategory} toggleEditModal={this.toggleEditModal} editvisible={this.state.editvisible} />
         <Table
           size="small"
           rowKey={record => record.id}

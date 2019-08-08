@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import { Modal,Form, Switch, Button, Upload, Icon,Input , message} from 'antd';
-import { CreateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
+import { Modal,Form, Select,Input , message} from 'antd';
+import { CreateSubCategory , fetchSubcategories  , loadSubCategories} from "../../store/actions/subcategories";
 import { connect } from "react-redux";
-const { TextArea } = Input;
+const { Option } = Select;
 
 class addSubCategory extends Component {
     state = {
@@ -18,23 +18,10 @@ class addSubCategory extends Component {
             if (!err) {
               const { dispatch } = this.props;
               console.log('Received values of form: ', values);
-              // const formdata = new FormData()
-
-              // for ( var key in values ) {
-              //   formdata.append(key, values[key]);
-              // }
-
-              // formdata.delete('picture')
-              // formdata.append('picture',values.picture.file);
-
-              // for (var pair of formdata.entries()) {
-              //   console.log(pair[0]+ ', ' +pair[1]); 
-              // }
-
-              dispatch(CreateCategory({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+              dispatch(CreateSubCategory({data:values}))
               .then(async()=> {
-                let res = await dispatch(fetchCategories())
-                dispatch(loadCategories(res));
+                let res = await dispatch(fetchSubcategories())
+                dispatch(loadSubCategories(res));
                 this.props.toggleAddModal()
                 message.success('Created successfully.')
                 this.setState({
@@ -61,17 +48,14 @@ class addSubCategory extends Component {
       this.props.toggleAddModal()
     }
   render() {
-    let {addvisible} = this.props;
+    let {addvisible , categories} = this.props;
     const { getFieldDecorator } = this.props.form;
     const { confirmLoading } = this.state
 
-    const props = {
-      beforeUpload: () => {
-        return false;
-      },
-      multiple: false,
-      className: 'upload-list-inline',
-    };
+    const renderOptionCategory = () => {
+      return categories.map ((cat, index) =>  <Option key={index} value={cat.id}>{cat.name}</Option>)
+    }
+
     const formItemLayout = {
         labelCol: { span: 6 },
         wrapperCol: { span: 14 },
@@ -79,7 +63,7 @@ class addSubCategory extends Component {
     return (
     <Modal
       width={800}
-      title="Add Category"
+      title="Add SubCategory"
       visible={addvisible}
       onOk={this.handleOk}
       confirmLoading={confirmLoading}
@@ -90,73 +74,40 @@ class addSubCategory extends Component {
             {getFieldDecorator('name', {
                 rules: [{
                 required: true,
-                message: 'Please enter your Category Name',
+                message: 'Please enter your SubCategory Name',
                 whitespace:true
                 }],
             })(
-                <Input placeholder="Please enter your Category Name" />
+                <Input placeholder="Please enter your SubCategory Name" />
             )}
         </Form.Item>
-
-        <Form.Item {...formItemLayout} label="Slug">
-            {getFieldDecorator('slug', {
-                rules: [{
-                required: true,
-                message: 'Please enter your Category Name',
-                whitespace:true
-                }],
-            })(
-                <Input placeholder="Please enter your Category Name" />
-            )}
-        </Form.Item>
-
         <Form.Item
-          label="Upload"
-          extra="Category picture"
+          label="Category"
+          hasFeedback
         >
-          {getFieldDecorator('picture', {
-            rules: [{
-             required: true,
-             message: 'Please enter your Category picture',
-            }],
-            valuePropName: 'setFieldsValue',
+          {getFieldDecorator('CategoryId', {
+            rules: [
+              { required: true, message: 'Please select your country!' },
+            ],
           })(
-            <Upload name="picture" listType="picture" {...props}>
-              <Button>
-                <Icon type="upload" /> Click to upload
-              </Button>
-            </Upload>
+            <Select placeholder="Please select a Category">
+             {renderOptionCategory()}
+            </Select>
           )}
         </Form.Item>
-        
-        <Form.Item
-          label="Description"
-        >
-        {getFieldDecorator('description', {
-                rules: [{
-                required: true,
-                message: 'Please enter your Category description',
-                whitespace:true
-                }],
-            })(
-                <TextArea placeholder="Please enter your Category description" rows={4} /> 
-            )}
-        </Form.Item>
-
-        <Form.Item
-          label="isActive"
-        >
-          {getFieldDecorator('isActive', { valuePropName: 'checked', initialValue:false })(
-            <Switch />
-          )}
-        </Form.Item>
-
+       
       </Form>
     </Modal>
     )
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    categories:state.categories,
+  };
+}
+
 const AddSubCategoryModal = Form.create({ name: 'validate_other' })(addSubCategory);
 
-export default connect()(AddSubCategoryModal)
+export default connect(mapStateToProps)(AddSubCategoryModal)
