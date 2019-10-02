@@ -1,7 +1,7 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_BRANDS } from "../actionTypes";
 
-let apiUrl = 'http://localhost:5000';
+
 
 
 export const loadBrands = brands => ({
@@ -11,13 +11,13 @@ export const loadBrands = brands => ({
 
 export const CreateBrand= (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "CREATE", "admin/brands", params)
+    return dataProvider("CREATE", "admin/brands", params)
   };
 };
 
 export const DeleteBrand= (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "DELETE_MANY", "admin/brands", params)
+    return dataProvider("DELETE_MANY", "admin/brands", params)
   };
 };
 
@@ -27,13 +27,13 @@ export const fetchBrands = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_LIST", "admin/brands", params)
+    return dataProvider("GET_LIST", "admin/brands", params)
   };
 };
 
 
 export const fetchOneBrand= (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_ONE", "admin/brands", params)
+    return dataProvider("GET_ONE", "admin/brands", params)
   };
 };

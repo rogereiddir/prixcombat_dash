@@ -1,8 +1,8 @@
 import React, { Component } from 'react'
-import {Layout, Menu, Icon , message} from 'antd';
+import {Layout, Menu, Icon , message } from 'antd';
 import { Link , withRouter} from "react-router-dom";
 import { connect } from "react-redux";
-import  { userLogout , setCurrentUser , setAuthorizationToken} from "../store/actions/users";
+import  { userLogout , setCurrentUser } from "../store/actions/users";
 
 const { Sider } = Layout;
 
@@ -14,36 +14,36 @@ class sidemenu extends Component {
     };
         
     onCollapse = (collapsed) => {
-        console.log(collapsed);
         this.setState({ collapsed });
     }
     logout = () => {
-     let {dispatch , role } = this.props
+     let {dispatch , role , userId } = this.props
       if(role === 'admin'){
-        dispatch(userLogout())
+        dispatch(userLogout({data:{userId:localStorage.getItem("uuid")}}))
         .then((res)=>{
         localStorage.clear();
-        setAuthorizationToken(false);
         dispatch(setCurrentUser({}));
         this.props.history.push('/');
         message.success(res.message)
+        localStorage.clear()
+
         })
       }else{
-        dispatch(userLogout())
+        dispatch(userLogout({data:{userId:localStorage.getItem("uuid")}}))
         .then((res)=>{
         localStorage.clear();
-        setAuthorizationToken(false);
         dispatch(setCurrentUser({}));
         this.props.history.push('/');
         message.success(res.message)
+        localStorage.clear()
+
         })
       }
     
     }
     
   render() {
-    let { match , role } = this.props;
-    console.log(match)
+    let { role } = this.props;
     let path = this.props.location.pathname.split('/')[1];
     let links = [
       {
@@ -110,7 +110,10 @@ class sidemenu extends Component {
 }
 
 function mapStateToProps(state) {
-  return {role:state.user.user.role};
+  return {
+    role:state.user.user.role,
+    userId:state.user.user.id
+  };
 }
 export default withRouter(
   connect(mapStateToProps)(sidemenu)

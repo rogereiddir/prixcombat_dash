@@ -8,7 +8,6 @@ import SideMenu from '../containers/sidemenu';
 const { Content, Footer } = Layout;
 
 export const AdminProtectedRoute = ({ component: Component,isAuthenticated,role, ...rest,}) => {
-  console.log(isAuthenticated)
   return (
     <Route
       {...rest}

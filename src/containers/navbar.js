@@ -1,21 +1,13 @@
 import React, { Component } from 'react'
-import {Layout , Icon, Typography } from 'antd';
-const { Title } = Typography;
+import {Layout} from 'antd';
 const { Header } = Layout;
-
 export default class navbar extends Component {
   render() {
     return (
-      <Header className="header">
+      <Header>
        
-        <Title className="logo"  level={3} style={{ color: '#fff' }}> <Icon type="home" />  Prixcombat Dashboard </Title>
+        <div style={{ color: '#fff' }}>  Prixcombat Dashboard </div>
      
-        {/* <Menu
-          theme="dark"
-          mode="horizontal"
-          style={{ lineHeight: '64px' }}
-         >
-        </Menu> */}
       </Header>
     )
   }

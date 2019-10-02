@@ -42,7 +42,6 @@ class usersList extends Component {
           this.setState({ loading: false });
           this.props.loadUsers(res);
           const pagination = { ...this.state.pagination };
-          console.log(res)
           pagination.total = Number(res.total);
           this.setState({
             pagination,

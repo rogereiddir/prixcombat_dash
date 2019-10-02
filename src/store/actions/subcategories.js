@@ -1,7 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_SUB_CATEGORIES } from "../actionTypes";
 
-let apiUrl = 'http://localhost:5000';
 
 
 export const loadSubCategories = subcategories => ({
@@ -11,19 +10,19 @@ export const loadSubCategories = subcategories => ({
 
 export const CreateSubCategory = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "CREATE", "admin/subcategories", params)
+    return dataProvider("CREATE", "admin/subcategories", params)
   };
 };
 
 export const DeleteSubCategory = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "DELETE_MANY", "admin/subcategories", params)
+    return dataProvider("DELETE_MANY", "admin/subcategories", params)
   };
 };
 
 export const UpdateSubCategory = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "UPDATE", "admin/subcategories", params)
+    return dataProvider("UPDATE", "admin/subcategories", params)
   };
 };
 
@@ -33,13 +32,13 @@ export const fetchSubcategories = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_LIST", "admin/subcategories", params)
+    return dataProvider("GET_LIST", "admin/subcategories", params)
   };
 };
 
 
 export const fetchOneSubCategory = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_ONE", "admin/subcategories", params)
+    return dataProvider("GET_ONE", "admin/subcategories", params)
   };
 };

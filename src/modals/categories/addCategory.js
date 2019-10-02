@@ -18,20 +18,20 @@ class addCategory extends Component {
             if (!err) {
               const { dispatch } = this.props;
               console.log('Received values of form: ', values);
-              // const formdata = new FormData()
+              const formdata = new FormData()
 
-              // for ( var key in values ) {
-              //   formdata.append(key, values[key]);
-              // }
+              for ( var key in values ) {
+                formdata.append(key, values[key]);
+              }
 
-              // formdata.delete('picture')
-              // formdata.append('picture',values.picture.file);
+              formdata.delete('picture')
+              formdata.append('picture',values.picture.file);
 
-              // for (var pair of formdata.entries()) {
-              //   console.log(pair[0]+ ', ' +pair[1]); 
-              // }
+              for (var pair of formdata.entries()) {
+                console.log(pair[0]+ ', ' +pair[1]); 
+              }
 
-              dispatch(CreateCategory({data:{...values,picture:values.picture.fileList[0].thumbUrl}}))
+              dispatch(CreateCategory({data:formdata}))
               .then(async()=> {
                 let res = await dispatch(fetchCategories())
                 dispatch(loadCategories(res));

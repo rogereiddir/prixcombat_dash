@@ -1,12 +1,11 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_SHOPS } from "../actionTypes";
 
-let apiUrl = 'http://localhost:5000';
 
 
 export function shopLogout() {
   return dispatch => {
-    return dataProvider(apiUrl, "LOGOUT", "users/auth/signout")
+    return dataProvider("LOGOUT", "users/auth/signout")
   };
 }
 
@@ -18,13 +17,13 @@ export const loadShops = shops => ({
 
 export const CreateShop = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "CREATE", "admin/shops", params)
+    return dataProvider("CREATE", "admin/shops", params)
   };
 };
 
 export const DeleteShop = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "DELETE_MANY", "admin/shops", params)
+    return dataProvider("DELETE_MANY", "admin/shops", params)
   };
 };
 
@@ -34,13 +33,13 @@ export const fetchShops = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_LIST", "admin/shops", params)
+    return dataProvider("GET_LIST", "admin/shops", params)
   };
 };
 
 
 export const fetchOneShop = (params) => {
   return dispatch => {
-    return dataProvider(apiUrl, "GET_ONE", "admin/shops", params)
+    return dataProvider("GET_ONE", "admin/shops", params)
   };
 };

@@ -2,13 +2,11 @@ import React from "react";
 import { Route, Redirect } from "react-router-dom";
 import { Layout } from 'antd';
 import { connect } from "react-redux";
-// import auth from "./auth";
 import NavBar from '../containers/navbar';
 import SideMenu from '../containers/sidemenu';
 const { Content, Footer } = Layout;
 
 export const ProtectedRoute = ({ component: Component,isAuthenticated, ...rest,}) => {
-  console.log(isAuthenticated)
   return (
     <Route
       {...rest}
@@ -27,9 +25,9 @@ export const ProtectedRoute = ({ component: Component,isAuthenticated, ...rest,}
                           <Component {...props} />
                   </div>
                 </Content>
-              <Footer style={{ textAlign: 'center' }}>
-                  Prixcombat ©2019 Created by Abdeljalil
-              </Footer>
+                <Footer style={{ textAlign: 'center' }}>
+                    Prixcombat ©2019 Created by Abdeljalil
+                </Footer>
             </Layout>
           </Layout>
          </Layout>

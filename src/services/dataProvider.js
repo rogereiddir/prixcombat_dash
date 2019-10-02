@@ -1,15 +1,14 @@
 import axios from "axios";
 import { stringify } from 'query-string';
 
-export function setTokenHeader(token) {
-  if (token) {
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-  } else {
-    delete axios.defaults.headers.common["Authorization"];
-  }
-}
 
-export function dataProvider(apiUrl , type , path , params) {
+let  transport = axios.create({
+    baseURL:'http://localhost:5000/',
+    withCredentials: true
+})
+
+
+export function dataProvider(type , path , params) {
   let url ='';
   let method ='';
   let data='';
@@ -25,43 +24,44 @@ export function dataProvider(apiUrl , type , path , params) {
             ]),
             filter: JSON.stringify(params.filter),
         };
-        url = `${apiUrl}/${path}?${stringify(query)}`;
+        url = `${path}?${stringify(query)}`;
         method = 'GET';
         break;
     }
     case "GET_ONE":
-        url = `${apiUrl}/${path}/${params.id}`;
+        url = `${path}/${params.id}`;
         method = 'GET';
         break;
     case "CREATE":
-        url = `${apiUrl}/${path}`;
+        url = `${path}`;
         method = 'POST';
         data = params.data;
         break;
     case "AUTH":
-        url = `${apiUrl}/${path}`;
+        url = `${path}`;
         method = 'POST';
         data = params.data;
         break;
-    case "LOGOUT":
-        url = `${apiUrl}/${path}`;
+    case "LOGOUT":{
+        url = `${path}`;
         method = 'POST';
+        data = params.data;
         break;
+    } 
     case "UPDATE":
-        console.log(params.data)
-        url = `${apiUrl}/${path}/${params.data.id}`;
+        url = `${path}/${params.data.id}`;
         method = 'PUT';
         data = params.data;
         break;
     case "DELETE":
-        url = `${apiUrl}/${path}/${params.id}`;
+        url = `${path}/${params.id}`;
         method = 'DELETE';
         break;
     case "DELETE_MANY":
         const query = {
             filter: JSON.stringify({ id: params.ids }),
         };
-        url = `${apiUrl}/${path}?${stringify(query)}`;
+        url = `${path}?${stringify(query)}`;
         method = 'DELETE';
         break;
     case "GET_MANY_REFERENCE": {
@@ -78,7 +78,7 @@ export function dataProvider(apiUrl , type , path , params) {
                 [params.target]: params.id,
             }),
         };
-        url = `${apiUrl}/${path}?${stringify(query)}`;
+        url = `${path}?${stringify(query)}`;
         method = 'GET';
         break;
     }
@@ -88,14 +88,14 @@ export function dataProvider(apiUrl , type , path , params) {
 
 
   return new Promise((resolve, reject) => {
-    return axios[method.toLowerCase()](url, data)
+    return transport[method.toLowerCase()](url, data)
       .then(res => {
-        // console.log({data:res.data,total:res.headers['content-range'].split('/').pop()})
-        // res.data.range=res.headers['content-range'].split('/').pop()
+        // console.log(res.data)
         return resolve(res.data);
       })
       .catch(err => {
-        return reject(err.response.data);
+        //   console.log(err.response)
+        return reject(err.response);
       });
   });
 }

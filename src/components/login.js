@@ -1,15 +1,20 @@
 import React from "react";
 import { Form, Icon, Input, Button ,Checkbox , Layout , message } from "antd";
+import Cookies from 'universal-cookie';
+import jwtDecode from "jwt-decode";
 import auth from "../hocs/auth";
 import { withRouter} from "react-router-dom";
 import { connect } from "react-redux";
 import  {  user_signin  } from "../store/actions/user_auth";
 import  {  shop_signin  } from "../store/actions/shop_auth";
-import  {  setCurrentUser , setAuthorizationToken  } from "../store/actions/users";
+import  {  setCurrentUser   } from "../store/actions/users";
 const FormItem = Form.Item;
 const { Content } = Layout;
+const cookies = new Cookies();
+
+
 class NormalLoginForm extends React.Component {
- 
+  
   handleSubmit = e => {
     e.preventDefault();
     const { dispatch } = this.props;
@@ -18,23 +23,22 @@ class NormalLoginForm extends React.Component {
         console.log("Received values of form: ", values);
         let {username} = values;
         if(username ==='admin'){
-          auth.login(values,() =>  { })
           dispatch(user_signin({data:values}))
-          .then(({token , ...user })=>{
-            localStorage.setItem("jwtToken", token);
-            setAuthorizationToken(token);
-            dispatch(setCurrentUser(user))
+          .then(({successMessage})=>{
+            console.log(successMessage)
+            message.success(successMessage)
+            const token = cookies.get('access')
+            dispatch(setCurrentUser(jwtDecode(token)))
+            localStorage.setItem("uuid",jwtDecode(token).id)
             this.props.history.push('/dashboard');
           }).catch((err)=>{
-            message.error(err.error.message)
+            console.log(err)
           })
         }else{
-        auth.login(values,() =>  { })
           dispatch(shop_signin({data:values}))
           .then(({token , ...user })=>{
-            localStorage.setItem("jwtToken", token);
-            setAuthorizationToken(token);
             dispatch(setCurrentUser(user))
+            localStorage.setItem("uuid",jwtDecode(token).id)
             this.props.history.push('/dashboard');
           }).catch((err)=>{
             message.error(err.error.message)
