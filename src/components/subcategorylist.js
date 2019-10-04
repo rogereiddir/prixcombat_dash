@@ -4,14 +4,12 @@ import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
 import AddSubCategory from '../modals/subcategories/addSubCategory'
 import EditSubCategory from '../modals/subcategories/editSubCategory'
-import { handleTokenErrors } from '../services/errorHandlers';
 import { fetchSubcategories  , loadSubCategories , DeleteSubCategory , fetchOneSubCategory } from "../store/actions/subcategories";
 
 const FormItem = Form.Item;
 
 class subcategorylist extends Component {
     state = {
-        pagination: {},
         selectedRowKeys: [],
         loading:true,
         loadingb:false,
@@ -46,41 +44,11 @@ class subcategorylist extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchSubcategories() 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadSubCategories(res);
-          const pagination = { ...this.state.pagination };
-          pagination.total = Number(res.total);
-          this.setState({
-            pagination,
-          });
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });  
+        this.props.fetchSubcategories()
+        this.setState({ loading:false })
+        
       }
-      handleTableChange = (pagination, filters, sorter) => {
-        const pager = { ...this.state.pagination };
-        pager.current = pagination.current;
-        this.setState({
-          pagination: pager,
-        });
-        let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize },
-          sort: { field: "name" , order: 'ASC' },
-          filter: {...filters},
-        }
-        this.setState({ loading: true });
-        this.props.fetchSubcategories(params) 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadSubCategories(res);
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });
-      }
+     
        confirm = (e) => {
         this.setState({ loading: true });
         this.props.DeleteSubCategory({ids:e})
@@ -163,7 +131,6 @@ class subcategorylist extends Component {
           rowKey={record => record.id}
           columns={columns}
           dataSource={this.props.subcategories}
-          pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
           onChange={this.handleTableChange}

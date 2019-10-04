@@ -7,12 +7,10 @@ import { connect } from "react-redux";
 import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategory } from "../store/actions/categories";
 import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
-import { handleTokenErrors } from '../services/errorHandlers';
 const FormItem = Form.Item;
 
 class categorylist extends Component {
     state = {
-        pagination: {},
         selectedRowKeys: [],
         loading:true,
         loadingb:false,
@@ -48,42 +46,9 @@ class categorylist extends Component {
       }
       componentDidMount() {
         this.props.fetchCategories() 
-        .then(res => {
-          console.log(res)
-          this.setState({ loading: false });
-          this.props.loadCategories(res);
-          const pagination = { ...this.state.pagination };
-          pagination.total = Number(res.total);
-          this.setState({
-            pagination,
-          });
-        })
-        .catch(err => {
-          // console.log(err)
-          handleTokenErrors(err)
-        });  
+        this.setState({ loading:false })
       }
-      handleTableChange = (pagination, filters, sorter) => {
-        const pager = { ...this.state.pagination };
-        pager.current = pagination.current;
-        this.setState({
-          pagination: pager,
-        });
-        let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize },
-          sort: { field: "name" , order: 'ASC' },
-          filter: {...filters},
-        }
-        this.setState({ loading: true });
-        this.props.fetchCategories(params) 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadCategories(res);
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });
-      }
+     
        confirm = (e) => {
         this.setState({ loading: true });
         this.props.DeleteCategory({ids:e})
@@ -183,7 +148,6 @@ class categorylist extends Component {
           rowKey={record => record.id}
           columns={columns}
           dataSource={this.props.categories}
-          pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
           onChange={this.handleTableChange}

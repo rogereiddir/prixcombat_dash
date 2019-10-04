@@ -1,6 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_BRANDS } from "../actionTypes";
-
+import {handleTokenErrors} from '../../services/errorHandlers'
 
 
 
@@ -27,7 +27,11 @@ export const fetchBrands = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider("GET_LIST", "admin/brands", params)
+    return dataProvider("GET_LIST", "admin/brands", params).then((res)=>{
+      dispatch(loadBrands(res))
+    }).catch(err => {
+      handleTokenErrors(err)
+    });  
   };
 };
 

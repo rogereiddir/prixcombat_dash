@@ -4,12 +4,10 @@ import AddBrand from '../modals/brands/addBrand';
 import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
 import { fetchBrands  , loadBrands  , DeleteBrand , fetchOneBrand  }from "../store/actions/brands";
-import { handleTokenErrors } from '../services/errorHandlers';
 const FormItem = Form.Item;
 
 class brandslist extends Component {
     state = {
-        pagination: {},
         selectedRowKeys: [],
         loading:true,
         loadingb:false,
@@ -37,49 +35,14 @@ class brandslist extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchBrands() 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadBrands(res);
-          const pagination = { ...this.state.pagination };
-         
-          pagination.total = Number(res.range);
-          this.setState({
-            pagination,
-          });
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });  
+        this.props.fetchBrands()
+        this.setState({ loading:false })
       }
-      handleTableChange = (pagination, filters, sorter) => {
-        const pager = { ...this.state.pagination };
-        pager.current = pagination.current;
-        this.setState({
-          pagination: pager,
-        });
-        let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize + 1 },
-          sort: { field: "name" , order: 'ASC' },
-          filter: {...filters},
-        }
-        this.setState({ loading: true });
-        console.log(params)
-        this.props.fetchBrands(params) 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadBrands(res);
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });
-      }
-       confirm = (e) => {
+      confirm = (e) => {
         this.setState({ loading: true });
         this.props.DeleteBrand({ids:e})
         .then( async ()=>{
-          let res = await this.props.fetchBrands()
-          this.props.loadBrands(res);
+          this.props.fetchBrands()
           message.success('Brand Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
           
@@ -149,7 +112,6 @@ class brandslist extends Component {
           rowKey={record => record.id}
           columns={columns}
           dataSource={this.props.brands}
-          pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
           onChange={this.handleTableChange}

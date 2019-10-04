@@ -4,13 +4,11 @@ import AddUser from '../modals/users/addUser';
 import { connect } from "react-redux";
 import { fetchUsers  , loadUsers , DeleteUser  } from "../store/actions/users";
 import { toggleIsLoading } from "../store/actions/isLoading";
-import { handleTokenErrors } from '../services/errorHandlers';
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
 class usersList extends Component {
     state = {
-        pagination: {},
         selectedRowKeys: [],
         loading:true,
         loadingb:false,
@@ -38,41 +36,10 @@ class usersList extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchUsers() 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadUsers(res);
-          const pagination = { ...this.state.pagination };
-          pagination.total = Number(res.total);
-          this.setState({
-            pagination,
-          });
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });  
+        this.props.fetchUsers()
+        this.setState({ loading:false })
       }
-      handleTableChange = (pagination, filters, sorter) => {
-        const pager = { ...this.state.pagination };
-        pager.current = pagination.current;
-        this.setState({
-          pagination: pager,
-        });
-        let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize },
-          sort: { field: "name" , order: 'ASC' },
-          filter: {...filters},
-        }
-        this.setState({ loading: true });
-        this.props.fetchUsers(params) 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadUsers(res);
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });
-      }
+     
        confirm = (e) => {
         this.setState({ loading: true });
         this.props.DeleteUser({ids:e})
@@ -157,7 +124,6 @@ class usersList extends Component {
           rowKey={record => record.id}
           columns={columns}
           dataSource={this.props.users}
-          pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
           onChange={this.handleTableChange}

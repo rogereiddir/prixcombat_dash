@@ -1,5 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_PRODUCTS } from "../actionTypes";
+import {handleTokenErrors} from '../../services/errorHandlers'
 
 
 export const loadProducts = products => ({
@@ -25,7 +26,11 @@ export const fetchProducts = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider("GET_LIST", "admin/products", params)
+    return dataProvider("GET_LIST", "admin/products", params).then((res)=>{
+      dispatch(loadProducts(res))
+    }).catch(err => {
+      handleTokenErrors(err)
+    });
   };
 };
 

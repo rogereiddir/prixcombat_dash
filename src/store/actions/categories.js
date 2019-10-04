@@ -1,5 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_CATEGORIES } from "../actionTypes";
+import {handleTokenErrors} from '../../services/errorHandlers'
 
 
 
@@ -32,7 +33,11 @@ export const fetchCategories = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider("GET_LIST", "admin/categories", params)
+    return dataProvider("GET_LIST", "admin/categories", params).then((res)=>{
+      dispatch(loadCategories(res))
+    }).catch(err => {
+      handleTokenErrors(err)
+    });  
  };
 }
 

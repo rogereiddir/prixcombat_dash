@@ -5,13 +5,11 @@ import ShowProduct from '../modals/products/showProduct';
 import { connect } from "react-redux";
 import { fetchProducts  , loadProducts  , DeleteProduct , fetchOneProduct  } from "../store/actions/products";
 import { toggleIsLoading } from "../store/actions/isLoading";
-import { handleTokenErrors } from '../services/errorHandlers';
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
 class productslist extends Component {
     state = {
-        pagination: {},
         selectedRowKeys: [],
         loading:true,
         loadingb:false,
@@ -39,46 +37,12 @@ class productslist extends Component {
           showvisible:!this.state.showvisible,
         });
       }
-      componentWillUnmount(){
-        console.log('ok')
-      }
+    
       componentDidMount() {
-        this.props.fetchProducts() 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadProducts(res);
-          const pagination = { ...this.state.pagination };
-          console.log(res)
-          pagination.total = Number(res.total);
-          this.setState({
-            pagination,
-          });
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });  
+        this.props.fetchProducts()
+        this.setState({ loading:false })
       }
-      handleTableChange = (pagination, filters, sorter) => {
-        const pager = { ...this.state.pagination };
-        pager.current = pagination.current;
-        this.setState({
-          pagination: pager,
-        });
-        let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize },
-          sort: { field: "name" , order: 'ASC' },
-          filter: {...filters},
-        }
-        this.setState({ loading: true });
-        this.props.fetchCategories(params) 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadProducts(res);
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });
-      }
+      
        confirm = (e) => {
         this.setState({ loading: true });
         this.props.DeleteProduct({ids:e})
@@ -176,7 +140,6 @@ class productslist extends Component {
           rowKey={record => record.id}
           columns={columns}
           dataSource={this.props.products}
-          pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
           onChange={this.handleTableChange}

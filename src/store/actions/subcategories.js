@@ -1,5 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_SUB_CATEGORIES } from "../actionTypes";
+import {handleTokenErrors} from '../../services/errorHandlers'
 
 
 
@@ -32,7 +33,11 @@ export const fetchSubcategories = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider("GET_LIST", "admin/subcategories", params)
+    return dataProvider("GET_LIST", "admin/subcategories", params).then((res)=>{
+      dispatch(loadSubCategories(res))
+    }).catch(err => {
+      handleTokenErrors(err)
+    });
   };
 };
 

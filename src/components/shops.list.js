@@ -4,12 +4,10 @@ import AddShop from '../modals/shops/addShop';
 import ShowShop from '../modals/shops/showShop';
 import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
-import { handleTokenErrors } from '../services/errorHandlers';
 import { fetchShops  , loadShops , DeleteShop , fetchOneShop } from "../store/actions/shops";
 const FormItem = Form.Item;
 class shopslist extends Component {
     state = {
-        pagination: {},
         selectedRowKeys: [],
         loading:true,
         loadingb:false,
@@ -38,41 +36,11 @@ class shopslist extends Component {
         });
       }
       componentDidMount() {
-        this.props.fetchShops() 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadShops(res);
-          const pagination = { ...this.state.pagination };
-          pagination.total = Number(res.total);
-          this.setState({
-            pagination,
-          });
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });  
+        this.props.fetchShops()
+        this.setState({ loading:false })
+
       }
-      handleTableChange = (pagination, filters, sorter) => {
-        const pager = { ...this.state.pagination };
-        pager.current = pagination.current;
-        this.setState({
-          pagination: pager,
-        });
-        let params = {
-          pagination: { page: pagination.current, perPage: pagination.pageSize },
-          sort: { field: "name" , order: 'ASC' },
-          filter: {...filters},
-        }
-        this.setState({ loading: true });
-        this.props.fetchShops(params) 
-        .then(res => {
-          this.setState({ loading: false });
-          this.props.loadShops(res);
-        })
-        .catch(err => {
-          handleTokenErrors(err)
-        });
-      }
+     
        confirm = (e) => {
         this.setState({ loading: true });
         this.props.DeleteShop({ids:e})
@@ -160,7 +128,6 @@ class shopslist extends Component {
           rowKey={record => record.id}
           columns={columns}
           dataSource={this.props.shops}
-          pagination={this.state.pagination}
           rowSelection={rowSelection}
           loading={this.state.loading}
           onChange={this.handleTableChange}

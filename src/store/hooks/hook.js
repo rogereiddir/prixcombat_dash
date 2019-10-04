@@ -17,11 +17,10 @@ export const jwt = store => next => action => {
 						let pos = buffer.map(e => e.type).indexOf('INVALID_TOKEN') - 1;
 						for (var i = pos; i > -1; i -= 1) {
 							if (typeof buffer[i] === 'function') {
-								//console.log(buffer[i](store.dispatch).then((r)=> console.log(r)))
 								store.dispatch({
 									type: 'RESEND',
 								    action: buffer[i](store.dispatch)
-								}).then((r)=> console.log(r));
+								})
 								break;
 							}
 						}

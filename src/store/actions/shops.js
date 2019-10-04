@@ -1,6 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_SHOPS } from "../actionTypes";
-
+import {handleTokenErrors} from '../../services/errorHandlers'
 
 
 export function shopLogout() {
@@ -33,7 +33,11 @@ export const fetchShops = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider("GET_LIST", "admin/shops", params)
+    return dataProvider("GET_LIST", "admin/shops", params).then((res)=>{
+      dispatch(loadShops(res))
+    }).catch(err => {
+      handleTokenErrors(err)
+    });
   };
 };
 

@@ -1,5 +1,6 @@
 import { dataProvider } from "../../services/dataProvider";
 import { LOAD_USERS , SET_CURRENT_USER } from "../actionTypes";
+import {handleTokenErrors} from '../../services/errorHandlers'
 
 
 export function refreshToken(params) {
@@ -51,7 +52,11 @@ export const fetchUsers = (params = {
   filter: {},
 }) => {
   return dispatch => {
-    return dataProvider("GET_LIST", "admin/users", params)
+    return dataProvider("GET_LIST", "admin/users", params).then((res)=>{
+      dispatch(loadUsers(res))
+    }).catch(err => {
+      handleTokenErrors(err)
+    });
   };
 };
 
