@@ -4,6 +4,7 @@ import AddUser from '../modals/users/addUser';
 import { connect } from "react-redux";
 import { fetchUsers  , loadUsers , DeleteUser  } from "../store/actions/users";
 import { toggleIsLoading } from "../store/actions/isLoading";
+import { handleTokenErrors } from '../services/errorHandlers';
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
@@ -48,7 +49,7 @@ class usersList extends Component {
           });
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });  
       }
       handleTableChange = (pagination, filters, sorter) => {
@@ -69,7 +70,7 @@ class usersList extends Component {
           this.props.loadUsers(res);
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });
       }
        confirm = (e) => {

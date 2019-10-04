@@ -49,7 +49,7 @@ export const AdminProtectedRoute = ({ component: Component,isAuthenticated,role,
 };
 
 function mapStateToProps(state) {
-  return { isAuthenticated: state.user.isAuthenticated , role:state.user.user.role};
+  return { isAuthenticated: state.userAuth.isAuthenticated , role:state.userAuth.user.role};
 }
 
 export default connect(mapStateToProps)(AdminProtectedRoute);

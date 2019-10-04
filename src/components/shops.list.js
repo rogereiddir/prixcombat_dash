@@ -4,6 +4,7 @@ import AddShop from '../modals/shops/addShop';
 import ShowShop from '../modals/shops/showShop';
 import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
+import { handleTokenErrors } from '../services/errorHandlers';
 import { fetchShops  , loadShops , DeleteShop , fetchOneShop } from "../store/actions/shops";
 const FormItem = Form.Item;
 class shopslist extends Component {
@@ -42,14 +43,13 @@ class shopslist extends Component {
           this.setState({ loading: false });
           this.props.loadShops(res);
           const pagination = { ...this.state.pagination };
-          console.log(res)
           pagination.total = Number(res.total);
           this.setState({
             pagination,
           });
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });  
       }
       handleTableChange = (pagination, filters, sorter) => {
@@ -70,7 +70,7 @@ class shopslist extends Component {
           this.props.loadShops(res);
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });
       }
        confirm = (e) => {

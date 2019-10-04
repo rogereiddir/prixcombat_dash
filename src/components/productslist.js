@@ -5,6 +5,7 @@ import ShowProduct from '../modals/products/showProduct';
 import { connect } from "react-redux";
 import { fetchProducts  , loadProducts  , DeleteProduct , fetchOneProduct  } from "../store/actions/products";
 import { toggleIsLoading } from "../store/actions/isLoading";
+import { handleTokenErrors } from '../services/errorHandlers';
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
 
@@ -54,7 +55,7 @@ class productslist extends Component {
           });
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });  
       }
       handleTableChange = (pagination, filters, sorter) => {
@@ -75,7 +76,7 @@ class productslist extends Component {
           this.props.loadProducts(res);
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });
       }
        confirm = (e) => {

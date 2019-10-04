@@ -4,6 +4,8 @@ export const LOAD_PRODUCTS = "LOAD_PRODUCTS";
 export const LOAD_SHOPS ="LOAD_SHOPS";
 export const LOAD_BRANDS ="LOAD_BRANDS";
 export const LOAD_USERS ="LOAD_USERS";
+export const LOAD_FETCHING ="LOAD_FETCHING";
+export const LOGGING_OUT ="LOGGING_OUT";
 export const SET_CURRENT_USER ="SET_CURRENT_USER";
 
 

@@ -33,8 +33,8 @@ export const fetchCategories = (params = {
 }) => {
   return dispatch => {
     return dataProvider("GET_LIST", "admin/categories", params)
-  };
-};
+ };
+}
 
 
 export const fetchOneCategory = (params) => {

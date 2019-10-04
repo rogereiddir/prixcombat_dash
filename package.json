@@ -17,7 +17,8 @@
     "redux-devtools-extension": "^2.13.8",
     "redux-thunk": "^2.3.0",
     "underscore": "^1.9.1",
-    "universal-cookie": "^4.0.2"
+    "universal-cookie": "^4.0.2",
+    "wretch": "^1.5.4"
   },
   "scripts": {
     "start": "react-scripts start",

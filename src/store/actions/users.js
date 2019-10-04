@@ -2,7 +2,11 @@ import { dataProvider } from "../../services/dataProvider";
 import { LOAD_USERS , SET_CURRENT_USER } from "../actionTypes";
 
 
-
+export function refreshToken(params) {
+  return dispatch => {
+    return dataProvider("REFRESHING_TOKEN", "users/auth/refreshToken", params)
+  };
+}
 
 export function userLogout(params) {
   return dispatch => {

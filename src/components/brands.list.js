@@ -4,6 +4,7 @@ import AddBrand from '../modals/brands/addBrand';
 import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
 import { fetchBrands  , loadBrands  , DeleteBrand , fetchOneBrand  }from "../store/actions/brands";
+import { handleTokenErrors } from '../services/errorHandlers';
 const FormItem = Form.Item;
 
 class brandslist extends Component {
@@ -48,7 +49,7 @@ class brandslist extends Component {
           });
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });  
       }
       handleTableChange = (pagination, filters, sorter) => {
@@ -70,7 +71,7 @@ class brandslist extends Component {
           this.props.loadBrands(res);
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });
       }
        confirm = (e) => {

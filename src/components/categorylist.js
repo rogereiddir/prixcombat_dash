@@ -7,6 +7,7 @@ import { connect } from "react-redux";
 import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategory } from "../store/actions/categories";
 import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
+import { handleTokenErrors } from '../services/errorHandlers';
 const FormItem = Form.Item;
 
 class categorylist extends Component {
@@ -48,6 +49,7 @@ class categorylist extends Component {
       componentDidMount() {
         this.props.fetchCategories() 
         .then(res => {
+          console.log(res)
           this.setState({ loading: false });
           this.props.loadCategories(res);
           const pagination = { ...this.state.pagination };
@@ -57,7 +59,8 @@ class categorylist extends Component {
           });
         })
         .catch(err => {
-          console.log(err)
+          // console.log(err)
+          handleTokenErrors(err)
         });  
       }
       handleTableChange = (pagination, filters, sorter) => {
@@ -78,7 +81,7 @@ class categorylist extends Component {
           this.props.loadCategories(res);
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });
       }
        confirm = (e) => {

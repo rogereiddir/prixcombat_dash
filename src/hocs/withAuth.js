@@ -48,7 +48,7 @@ export const ProtectedRoute = ({ component: Component,isAuthenticated, ...rest,}
 };
 
 function mapStateToProps(state) {
-  return { isAuthenticated: state.user.isAuthenticated };
+  return { isAuthenticated: state.userAuth.isAuthenticated };
 }
 
 export default connect(mapStateToProps)(ProtectedRoute);

@@ -4,6 +4,7 @@ import { connect } from "react-redux";
 import {isEmpty} from 'underscore';
 import AddSubCategory from '../modals/subcategories/addSubCategory'
 import EditSubCategory from '../modals/subcategories/editSubCategory'
+import { handleTokenErrors } from '../services/errorHandlers';
 import { fetchSubcategories  , loadSubCategories , DeleteSubCategory , fetchOneSubCategory } from "../store/actions/subcategories";
 
 const FormItem = Form.Item;
@@ -56,7 +57,7 @@ class subcategorylist extends Component {
           });
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });  
       }
       handleTableChange = (pagination, filters, sorter) => {
@@ -77,7 +78,7 @@ class subcategorylist extends Component {
           this.props.loadSubCategories(res);
         })
         .catch(err => {
-          console.log(err)
+          handleTokenErrors(err)
         });
       }
        confirm = (e) => {

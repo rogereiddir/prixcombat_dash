@@ -6,6 +6,8 @@ import {shops} from "./shops";
 import {brands} from "./brands";
 import {users} from "./users";
 import {loading} from "./isloading";
+import {fetching} from "./isFetchingToken";
+import {loggingout} from "./isLoggingOut"
 import {user} from "./auth";
 
 const rootReducer = combineReducers({
@@ -16,7 +18,9 @@ const rootReducer = combineReducers({
   subcategories,
   users,
   loading,
-  user
+  fetching,
+  loggingout,
+  userAuth:user
 });
 
 export default rootReducer;

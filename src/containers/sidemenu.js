@@ -17,7 +17,7 @@ class sidemenu extends Component {
         this.setState({ collapsed });
     }
     logout = () => {
-     let {dispatch , role , userId } = this.props
+     let {dispatch , role } = this.props
       if(role === 'admin'){
         dispatch(userLogout({data:{userId:localStorage.getItem("uuid")}}))
         .then((res)=>{
@@ -26,7 +26,6 @@ class sidemenu extends Component {
         this.props.history.push('/');
         message.success(res.message)
         localStorage.clear()
-
         })
       }else{
         dispatch(userLogout({data:{userId:localStorage.getItem("uuid")}}))
@@ -111,8 +110,7 @@ class sidemenu extends Component {
 
 function mapStateToProps(state) {
   return {
-    role:state.user.user.role,
-    userId:state.user.user.id
+    role:state.userAuth.user.role,
   };
 }
 export default withRouter(

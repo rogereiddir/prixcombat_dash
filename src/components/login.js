@@ -1,8 +1,7 @@
 import React from "react";
-import { Form, Icon, Input, Button ,Checkbox , Layout , message } from "antd";
+import { Form, Icon, Input, Button ,Checkbox , Layout , message, Modal } from "antd";
 import Cookies from 'universal-cookie';
 import jwtDecode from "jwt-decode";
-import auth from "../hocs/auth";
 import { withRouter} from "react-router-dom";
 import { connect } from "react-redux";
 import  {  user_signin  } from "../store/actions/user_auth";
@@ -14,7 +13,12 @@ const cookies = new Cookies();
 
 
 class NormalLoginForm extends React.Component {
-  
+  error(title,content) {
+    Modal.error({
+      title,
+      content
+    });
+  }
   handleSubmit = e => {
     e.preventDefault();
     const { dispatch } = this.props;
@@ -27,21 +31,21 @@ class NormalLoginForm extends React.Component {
           .then(({successMessage})=>{
             console.log(successMessage)
             message.success(successMessage)
-            const token = cookies.get('access')
-            dispatch(setCurrentUser(jwtDecode(token)))
-            localStorage.setItem("uuid",jwtDecode(token).id)
+            dispatch(setCurrentUser(jwtDecode(cookies.get('access'))))
+            localStorage.setItem("uuid",jwtDecode(cookies.get('access')).id)
             this.props.history.push('/dashboard');
-          }).catch((err)=>{
-            console.log(err)
+          }).catch(({data})=>{
+            this.error('This is an error message',data.error.message)
           })
         }else{
           dispatch(shop_signin({data:values}))
-          .then(({token , ...user })=>{
-            dispatch(setCurrentUser(user))
-            localStorage.setItem("uuid",jwtDecode(token).id)
+          .then(({successMessage})=>{
+            message.success(successMessage)
+            dispatch(setCurrentUser(jwtDecode(cookies.get('access'))))           
+            localStorage.setItem("uuid",jwtDecode(cookies.get('access')).id)
             this.props.history.push('/dashboard');
-          }).catch((err)=>{
-            message.error(err.error.message)
+          }).catch(({data})=>{
+            this.error('This is an error message',data.error.message)
           })
 
         }
