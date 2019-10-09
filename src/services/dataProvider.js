@@ -3,7 +3,6 @@ import { stringify } from 'query-string';
 
 
 let  transport = axios.create({
-    baseURL:'http://localhost:5000/',
     withCredentials: true
 })
 
@@ -94,7 +93,7 @@ export function dataProvider(type , path , params) {
 
 
   return new Promise((resolve, reject) => {
-    return transport[method.toLowerCase()](url, data)
+    return transport[method.toLowerCase()](`/api/v1/${url}`, data)
       .then(res => {
         // console.log(res.data)
         return resolve(res.data);
