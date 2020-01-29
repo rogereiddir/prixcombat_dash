@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Modal,Form, Switch, Button, Upload, Icon,Input , message} from 'antd';
-import { CreateCategory , fetchCategories ,loadCategories} from "../../store/actions/categories";
+import { CreateCategory , fetchCategories} from "../../store/actions/categories";
 import { connect } from "react-redux";
 const { TextArea } = Input;
 
@@ -33,8 +33,8 @@ class addCategory extends Component {
 
               dispatch(CreateCategory({data:formdata}))
               .then(async()=> {
-                let res = await dispatch(fetchCategories())
-                dispatch(loadCategories(res));
+                dispatch(fetchCategories())
+                // dispatch(loadCategories(res));
                 this.props.toggleAddModal()
                 message.success('Created successfully.')
                 this.setState({
@@ -51,7 +51,7 @@ class addCategory extends Component {
               this.setState({
                 confirmLoading: false,
               });
-              message.error('oops something is wrong');
+              message.error('oops something is wronggggggg');
             }
           });
         }, 2000);

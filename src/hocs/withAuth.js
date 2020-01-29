@@ -6,7 +6,7 @@ import NavBar from '../containers/navbar';
 import SideMenu from '../containers/sidemenu';
 const { Content, Footer } = Layout;
 
-export const ProtectedRoute = ({ component: Component,isAuthenticated, ...rest,}) => {
+export const ProtectedRoute = ({ component: Component,isAuthenticated, ...rest}) => {
   return (
     <Route
       {...rest}

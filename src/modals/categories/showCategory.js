@@ -29,7 +29,7 @@ import { Modal , Card} from 'antd';
         type="inner"
         title="Picture"
         style={{ marginTop: 16 , width: 240 }}
-        cover={<img alt="example" src={Category.picture} />}
+        cover={<img alt="example" src={`http://localhost:5000/pics/${Category.picture}`} />}
         >
        
         </Card>

@@ -4,7 +4,7 @@ import AddCategory from '../modals/categories/addCategory';
 import ShowCategory from '../modals/categories/showCategory';
 import EditCategory from '../modals/categories/editCategory';
 import { connect } from "react-redux";
-import { fetchCategories  , loadCategories , DeleteCategory , fetchOneCategory } from "../store/actions/categories";
+import { fetchCategories  , DeleteCategory , fetchOneCategory } from "../store/actions/categories";
 import { toggleIsLoading } from "../store/actions/isLoading";
 import {isEmpty} from 'underscore'
 const FormItem = Form.Item;
@@ -53,13 +53,14 @@ class categorylist extends Component {
         this.setState({ loading: true });
         this.props.DeleteCategory({ids:e})
         .then( async ()=>{
-          let res = await this.props.fetchCategories()
-          this.props.loadCategories(res);
+          this.props.fetchCategories()
+          // this.props.loadCategories(res);
           message.success('Category Deleted');
           this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
           
         }).catch(()=>{
           message.error('Category not Deleted');
+          this.setState({ loading: false , disabled:true ,selectedRowKeys:[]});
         });
       }
      cancel = (e) => {
@@ -163,4 +164,4 @@ function mapStateToProps(state) {
   };
 }
 
-export default connect(mapStateToProps, { fetchCategories , loadCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategory })(categorylist)
+export default connect(mapStateToProps, { fetchCategories ,toggleIsLoading, DeleteCategory  ,fetchOneCategory })(categorylist)
